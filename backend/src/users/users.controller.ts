@@ -40,14 +40,14 @@ import {
     //   const userId = req.user['sub']; // asumiendo que sub = user.id
     //   const services = await this.usersService.getServicesByPhotographerId(userId);
   
-    //   // Simulación del DTO hasta que crees `ServiceClass` y `Style`
+    //   // Simulación del DTO hasta que crees `ServiceClass` y `Category`
     //   return services.map((s) => ({
     //     id: s.id,
     //     name: s.name,
     //     description: s.description,
     //     price: s.price,
     //     imageUrl: s.imageUrl,
-    //     styleName: s.style?.name, // opcional, si tienes la relación
+    //     categoryName: s.category?.name, // opcional, si tienes la relación
     //   }));
     // }
   

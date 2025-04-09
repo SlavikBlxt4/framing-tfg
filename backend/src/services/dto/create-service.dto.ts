@@ -27,10 +27,10 @@ import {
     availability?: string;
   
     @IsInt()
-    styleId: number;
+    categoryId: number;
   
     @IsString()
     @IsOptional()
-    styleName?: string; // Podrías omitir esto si el style se selecciona por ID
+    categoryName?: string; // Podrías omitir esto si el category se selecciona por ID
   }
   

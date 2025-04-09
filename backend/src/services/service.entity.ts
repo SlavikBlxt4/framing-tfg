@@ -9,7 +9,7 @@ import {
   import { User } from '../users/user.entity';
 //   import { Rating } from '../ratings/rating.entity';
 //   import { Booking } from '../bookings/booking.entity';
-//   import { Style } from '../styles/style.entity';
+  import { Category } from '../categories/category.entity';
   
   @Entity('service')
   export class Service {
@@ -38,9 +38,9 @@ import {
     // @OneToMany(() => Booking, (booking) => booking.service)
     // bookings: Booking[];
   
-    // @ManyToOne(() => Style, (style) => style.services, { eager: true })
-    // @JoinColumn({ name: 'style_id' })
-    // style: Style;
+    @ManyToOne(() => Category, (category) => category.services, { eager: true })
+    @JoinColumn({ name: 'category_id' })
+    category: Category;
   
     @Column({ nullable: true, type: 'text' })
     availability: string; // Puede almacenar JSON como string

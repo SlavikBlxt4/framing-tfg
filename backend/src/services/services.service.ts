@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Service } from './service.entity';
 import { User, UserRole } from '../users/user.entity';
-// import { Style } from '../styles/style.entity';
+import { Category } from '../categories/category.entity';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { ServiceResponseDto } from './dto/service-response.dto';
 import { TopRatedServiceDto } from './dto/top-rated-service.dto';
@@ -17,37 +17,37 @@ export class ServicesService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
 
-    // @InjectRepository(Style)
-    // private readonly styleRepo: Repository<Style>,
+    @InjectRepository(Category)
+    private readonly categoryRepo: Repository<Category>,
   ) {}
 
-//   async createService(dto: CreateServiceDto, photographerId: number): Promise<Service> {
-//     const photographer = await this.userRepo.findOne({ where: { id: photographerId } });
-//     if (!photographer) {
-//       throw new NotFoundException('Photographer not found');
-//     }
+  async createService(dto: CreateServiceDto, photographerId: number): Promise<Service> {
+    const photographer = await this.userRepo.findOne({ where: { id: photographerId } });
+    if (!photographer) {
+      throw new NotFoundException('Photographer not found');
+    }
 
-//     if (photographer.role !== UserRole.PHOTOGRAPHER) {
-//       throw new ForbiddenException('User is not a photographer');
-//     }
+    if (photographer.role !== UserRole.PHOTOGRAPHER) {
+      throw new ForbiddenException('User is not a photographer');
+    }
 
-//     const style = await this.styleRepo.findOne({ where: { id: dto.styleId } });
-//     if (!style) {
-//       throw new NotFoundException('Style not found');
-//     }
+    const category = await this.categoryRepo.findOne({ where: { id: dto.categoryId } });
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
 
-//     const service = this.serviceRepo.create({
-//       name: dto.name,
-//       description: dto.description,
-//       price: dto.price,
-//       imageUrl: dto.imageUrl,
-//       availability: dto.availability,
-//       photographer,
-//       style,
-//     });
+    const service = this.serviceRepo.create({
+      name: dto.name,
+      description: dto.description,
+      price: dto.price,
+      imageUrl: dto.imageUrl,
+      availability: dto.availability,
+      photographer,
+      category,
+    });
 
-//     return this.serviceRepo.save(service);
-//   }
+    return this.serviceRepo.save(service);
+  }
 
   async getTop10HighestRatedServices(): Promise<TopRatedServiceDto[]> {
     return this.serviceRepo.query(`
@@ -77,18 +77,18 @@ export class ServicesService {
   }
 
   async findServiceById(id: number): Promise<Service> {
-    const service = await this.serviceRepo.findOne({ where: { id }, relations: ['style', 'photographer'] });
+    const service = await this.serviceRepo.findOne({ where: { id }, relations: ['category', 'photographer'] });
     if (!service) {
       throw new NotFoundException('Service not found');
     }
     return service;
   }
 
-  async getServicesByStyleName(styleName: string): Promise<ServiceResponseDto[]> {
+  async getServicesByCategoryName(categoryName: string): Promise<ServiceResponseDto[]> {
     const services = await this.serviceRepo
       .createQueryBuilder('s')
-      .innerJoinAndSelect('s.style', 'style')
-      .where('LOWER(style.name) = LOWER(:styleName)', { styleName })
+      .innerJoinAndSelect('s.category', 'category')
+      .where('LOWER(category.name) = LOWER(:categoryName)', { categoryName })
       .leftJoinAndSelect('s.photographer', 'photographer')
       .getMany();
 
@@ -102,7 +102,7 @@ export class ServicesService {
       description: service.description,
       price: service.price,
       imageUrl: service.imageUrl,
-    //   styleName: service.style?.name,
+      categoryName: service.category?.name,
     };
   }
 }

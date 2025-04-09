@@ -4,6 +4,6 @@ export class ServiceResponseDto {
     description: string;
     price: number;
     imageUrl: string;
-    // styleName: string;
+    categoryName: string;
   }
   

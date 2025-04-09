@@ -4,11 +4,12 @@ import { ServicesService } from './services.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Service } from './service.entity';
 import { User } from '../users/user.entity';
-// import { Style } from '../styles/style.entity';
+import { Category } from 'src/categories/category.entity';
+// import { Category } from '../categories/category.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Service, User]), // añadir style luego
+    TypeOrmModule.forFeature([Service, User, Category]),
   ],
   controllers: [ServicesController],
   providers: [ServicesService],

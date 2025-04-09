@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module'; // 👈 IMPORTA TU MODULO AQUÍ
 import { ServicesModule } from './services/services.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ServicesModule } from './services/services.module';
     UsersModule,
     AuthModule,
     ServicesModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

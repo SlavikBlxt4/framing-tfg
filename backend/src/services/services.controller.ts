@@ -18,54 +18,54 @@ import {
   import { Request, Response } from 'express';
   import { InjectRepository } from '@nestjs/typeorm';
   import { Repository } from 'typeorm';
-//   import { Style } from '../styles/style.entity';
+  import { Category } from '../categories/category.entity';
   
   @Controller('photographer/services')
   export class ServicesController {
     constructor(
       private readonly servicesService: ServicesService,
   
-    //   @InjectRepository(Style)
-    //   private readonly styleRepo: Repository<Style>,
+      @InjectRepository(Category)
+      private readonly categoryRepo: Repository<Category>,
     ) {}
   
-    // @UseGuards(JwtAuthGuard)
-    // @Post('create')
-    // async createService(
-    //   @Body() dto: CreateServiceDto,
-    //   @Req() req: Request,
-    //   @Res() res: Response,
-    // ) {
-    //   const photographerId = req.user['userId'];
+    @UseGuards(JwtAuthGuard)
+    @Post('create')
+    async createService(
+      @Body() dto: CreateServiceDto,
+      @Req() req: Request,
+      @Res() res: Response,
+    ) {
+      const photographerId = req.user['userId'];
   
-    //   // Buscar estilo por nombre si llega como styleName
-    // //   if (!dto.styleId && dto.styleName) {
-    // //     const style = await this.styleRepo.findOne({
-    // //       where: { name: dto.styleName },
-    // //     });
+      // Buscar estilo por nombre si llega como categoryName
+    //   if (!dto.categoryId && dto.categoryName) {
+    //     const category = await this.categoryRepo.findOne({
+    //       where: { name: dto.categoryName },
+    //     });
   
-    // //     if (!style) {
-    // //       return res.status(HttpStatus.BAD_REQUEST).json({
-    // //         message: 'Estilo no encontrado',
-    // //       });
-    // //     }
+    //     if (!category) {
+    //       return res.status(HttpStatus.BAD_REQUEST).json({
+    //         message: 'Estilo no encontrado',
+    //       });
+    //     }
   
-    // //     dto.styleId = style.id;
-    // //   }
+    //     dto.categoryId = category.id;
+    //   }
   
-    //   const service = await this.servicesService.createService(dto, photographerId);
+      const service = await this.servicesService.createService(dto, photographerId);
   
-    //   const responseDto: ServiceResponseDto = {
-    //     serviceId: service.id,
-    //     serviceName: service.name,
-    //     serviceDescription: service.description,
-    //     price: service.price,
-    //     imageUrl: service.imageUrl,
-    //     styleName: service.style.name,
-    //   };
+      const responseDto: ServiceResponseDto = {
+        id: service.id,
+        name: service.name,
+        description: service.description,
+        price: service.price,
+        imageUrl: service.imageUrl,
+        categoryName: service.category.name,
+      };
   
-    //   return res.status(HttpStatus.OK).json(responseDto);
-    // }
+      return res.status(HttpStatus.OK).json(responseDto);
+    }
   
     @Get('top-rated')
     async getTopRated(): Promise<TopRatedServiceDto[]> {
@@ -89,9 +89,9 @@ import {
       }
     }
   
-    @Get(':styleName')
-    async findByStyle(@Param('styleName') styleName: string): Promise<ServiceResponseDto[]> {
-      return this.servicesService.getServicesByStyleName(styleName);
+    @Get(':categoryName')
+    async findByCategory(@Param('categoryName') categoryName: string): Promise<ServiceResponseDto[]> {
+      return this.servicesService.getServicesByCategoryName(categoryName);
     }
   }
   
