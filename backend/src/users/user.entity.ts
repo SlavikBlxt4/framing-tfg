@@ -14,6 +14,7 @@ import {
     Matches,
     MaxLength,
   } from 'class-validator';
+import { Service } from 'src/services/service.entity';
   
   export enum UserRole {
     CLIENT = 'CLIENT',
@@ -76,7 +77,7 @@ import {
     // @OneToMany(() => Booking, (booking) => booking.client)
     // bookings: Booking[];
   
-    // @OneToMany(() => Service, (service) => service.photographer)
-    // services: Service[];
+    @OneToMany(() => Service, (service) => service.photographer)
+    services: Service[];
   }
   
