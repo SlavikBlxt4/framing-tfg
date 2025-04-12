@@ -8,7 +8,7 @@ import {
   import { User, UserRole } from './user.entity';
   import * as bcrypt from 'bcrypt';
   import { JwtService } from '@nestjs/jwt';
-//   import { Service } from '../services/service.entity'; // entidad de servicios
+  import { Service } from '../services/service.entity'; // entidad de servicios
   
   @Injectable()
   export class UsersService {
@@ -16,15 +16,15 @@ import {
       @InjectRepository(User)
       private userRepo: Repository<User>,
   
-    //   @InjectRepository(Service)
-    //   private serviceRepo: Repository<Service>,
+      @InjectRepository(Service)
+      private serviceRepo: Repository<Service>,
   
       private jwtService: JwtService,
     ) {}
   
-    // async getServicesByPhotographerId(photographer_id: number): Promise<Service[]> {
-    //   return this.serviceRepo.find({ where: { photographer: { id: photographer_id } } });
-    // }
+    async getServicesByPhotographerId(photographer_id: number): Promise<Service[]> {
+      return this.serviceRepo.find({ where: { photographer: { id: photographer_id } } });
+    }
   
     async signup(
       name: string,

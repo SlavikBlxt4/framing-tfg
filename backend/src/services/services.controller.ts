@@ -38,20 +38,19 @@ import {
     ) {
       const photographerId = req.user['userId'];
   
-      // Buscar estilo por nombre si llega como categoryName
-    //   if (!dto.categoryId && dto.categoryName) {
-    //     const category = await this.categoryRepo.findOne({
-    //       where: { name: dto.categoryName },
-    //     });
+      if (!dto.categoryId && dto.categoryName) {
+        const category = await this.categoryRepo.findOne({
+          where: { name: dto.categoryName },
+        });
   
-    //     if (!category) {
-    //       return res.status(HttpStatus.BAD_REQUEST).json({
-    //         message: 'Estilo no encontrado',
-    //       });
-    //     }
+        if (!category) {
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            message: 'Estilo no encontrado',
+          });
+        }
   
-    //     dto.categoryId = category.id;
-    //   }
+        dto.categoryId = category.id;
+      }
   
       const service = await this.servicesService.createService(dto, photographerId);
   
