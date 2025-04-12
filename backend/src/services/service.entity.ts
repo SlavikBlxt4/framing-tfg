@@ -8,8 +8,8 @@ import {
   } from 'typeorm';
   import { User } from '../users/user.entity';
 //   import { Rating } from '../ratings/rating.entity';
-//   import { Booking } from '../bookings/booking.entity';
   import { Category } from '../categories/category.entity';
+import { Booking } from 'src/bookings/booking.entity';
   
   @Entity('service')
   export class Service {
@@ -35,8 +35,8 @@ import {
     // @OneToMany(() => Rating, (rating) => rating.service)
     // ratings: Rating[];
   
-    // @OneToMany(() => Booking, (booking) => booking.service)
-    // bookings: Booking[];
+    @OneToMany(() => Booking, (booking) => booking.service)
+    bookings: Booking[];
   
     @ManyToOne(() => Category, (category) => category.services, { eager: true })
     @JoinColumn({ name: 'category_id' })
