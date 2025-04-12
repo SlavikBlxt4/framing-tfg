@@ -10,6 +10,7 @@ import {
 //   import { Rating } from '../ratings/rating.entity';
   import { Category } from '../categories/category.entity';
 import { Booking } from 'src/bookings/booking.entity';
+import { Rating } from 'src/ratings/rating.entity';
   
   @Entity('service')
   export class Service {
@@ -32,8 +33,8 @@ import { Booking } from 'src/bookings/booking.entity';
     @JoinColumn({ name: 'photographer_id' })
     photographer: User;
   
-    // @OneToMany(() => Rating, (rating) => rating.service)
-    // ratings: Rating[];
+    @OneToMany(() => Rating, (rating) => rating.service)
+    ratings: Rating[];
   
     @OneToMany(() => Booking, (booking) => booking.service)
     bookings: Booking[];

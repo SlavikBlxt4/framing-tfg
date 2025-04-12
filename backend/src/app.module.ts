@@ -7,6 +7,7 @@ import { DatabaseModule } from './database/database.module'; // 👈 IMPORTA TU 
 import { ServicesModule } from './services/services.module';
 import { CategoriesModule } from './categories/categories.module';
 import { BookingsModule } from './bookings/bookings.module';
+import { RatingsModule } from './ratings/ratings.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { BookingsModule } from './bookings/bookings.module';
     ServicesModule,
     CategoriesModule,
     BookingsModule,
+    RatingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
