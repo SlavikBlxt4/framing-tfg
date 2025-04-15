@@ -38,8 +38,11 @@ import {
     @UseGuards(JwtAuthGuard)
     @Get('services')
     async getMyServices(@Req() req: Request): Promise<ServiceResponseDto[]> {
-      const userId = req.user['sub'];
+      const userId = req.user['userId'];
       const role = req.user['role'];
+      console.log('User ID:', userId);
+      console.log('User Role:', role);
+      console.log('Request User:', req.user);
 
       if (role !== UserRole.PHOTOGRAPHER) {
         throw new ForbiddenException('Solo los fotógrafos pueden ver sus servicios.');

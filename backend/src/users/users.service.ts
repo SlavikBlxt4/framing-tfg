@@ -22,9 +22,15 @@ import {
       private jwtService: JwtService,
     ) {}
   
-    async getServicesByPhotographerId(photographer_id: number): Promise<Service[]> {
-      return this.serviceRepo.find({ where: { photographer: { id: photographer_id } } });
+    async getServicesByPhotographerId(photographerId: number): Promise<Service[]> {
+      return this.serviceRepo
+        .createQueryBuilder('service')
+        .leftJoinAndSelect('service.photographer', 'photographer')
+        .leftJoinAndSelect('service.category', 'category') // si usas category
+        .where('photographer.id = :photographerId', { photographerId })
+        .getMany();
     }
+    
   
     async signup(
       name: string,
