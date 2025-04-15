@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    ForbiddenException,
     Get,
     Post,
     Req,
@@ -37,17 +38,22 @@ import {
     @UseGuards(JwtAuthGuard)
     @Get('services')
     async getMyServices(@Req() req: Request): Promise<ServiceResponseDto[]> {
-      const userId = req.user['sub']; // asumiendo que sub = user.id
+      const userId = req.user['sub'];
+      const role = req.user['role'];
+
+      if (role !== UserRole.PHOTOGRAPHER) {
+        throw new ForbiddenException('Solo los fotógrafos pueden ver sus servicios.');
+      }
+
       const services = await this.usersService.getServicesByPhotographerId(userId);
-  
-      // Simulación del DTO hasta que crees `ServiceClass` y `Category`
+
       return services.map((s) => ({
         id: s.id,
         name: s.name,
         description: s.description,
         price: s.price,
         imageUrl: s.imageUrl,
-        categoryName: s.category?.name, // opcional, si tienes la relación
+        categoryName: s.category?.name,
       }));
     }
   

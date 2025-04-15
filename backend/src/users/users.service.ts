@@ -76,13 +76,16 @@ import {
   
     async getTop10PhotographersByBookings(): Promise<any[]> {
       return this.userRepo.query(`
-        SELECT u.*, COUNT(b.id) as total_bookings
+        SELECT u.id AS photographer_id,
+        u.name AS photographer_name,
+        COUNT(b.id) AS booking_count
         FROM users u
-        JOIN bookings b ON u.id = b.photographer_id
+        JOIN service s ON u.id = s.photographer_id
+        JOIN booking b ON s.id = b.service_id
         WHERE u.role = 'PHOTOGRAPHER'
-        GROUP BY u.id
-        ORDER BY total_bookings DESC
-        LIMIT 10
+        GROUP BY u.id, u.name
+        ORDER BY booking_count DESC
+        LIMIT 10;
       `);
     }
   }

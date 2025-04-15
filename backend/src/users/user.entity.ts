@@ -15,6 +15,7 @@ import {
     MaxLength,
   } from 'class-validator';
 import { Service } from 'src/services/service.entity';
+import { Booking } from 'src/bookings/booking.entity';
   
   export enum UserRole {
     CLIENT = 'CLIENT',
@@ -73,9 +74,9 @@ import { Service } from 'src/services/service.entity';
     @IsOptional()
     url_profile_image?: string;
   
-    // Relaciones
-    // @OneToMany(() => Booking, (booking) => booking.client)
-    // bookings: Booking[];
+    Relaciones
+    @OneToMany(() => Booking, (booking) => booking.client)
+    bookings: Booking[];
   
     @OneToMany(() => Service, (service) => service.photographer)
     services: Service[];

@@ -1,7 +1,6 @@
 export enum BookingState {
-    PENDING = 'pending',
-    ACTIVE = 'active',
-    CANCELLED = 'cancelled',
-    DONE = 'done',
-  }
-  
+  ACTIVE = 'active',
+  DONE = 'done',
+  CANCELLED = 'cancelled',
+  PENDING = 'pending',
+}

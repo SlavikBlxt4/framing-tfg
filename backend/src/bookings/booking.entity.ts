@@ -30,5 +30,16 @@ import {
   
     @Column({ type: 'enum', enum: BookingState })
     state: BookingState;
+
+    @Column({ name: 'url_images', nullable: true })
+    urlImages: string;
+
+    @Column({ type: 'double precision', nullable: true })
+    price: number;
+
+    @Column({ name: 'booked_hours', type: 'integer', nullable: true })
+    bookedHours: number;
+
+    
   }
   
