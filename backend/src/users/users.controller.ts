@@ -12,7 +12,6 @@ import {
   import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
   import { Request } from 'express';
   import { ServiceResponseDto } from '../services/dto/service-response.dto';
-  import { Service } from '../services/service.entity';
   import { UserRole } from './user.entity';
   
   @Controller('users')

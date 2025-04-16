@@ -13,7 +13,6 @@ import {
   import { BookingHistoryDto } from './dto/booking-history.dto';
   import { BookingInfoDto } from './dto/booking-info.dto';
   import { ServiceToRateDto } from './dto/service-to-rate.dto';
-//   import { SendGridService } from '../sendgrid/sendgrid.service';
   
   @Injectable()
   export class BookingsService {
@@ -27,7 +26,6 @@ import {
       @InjectRepository(Service)
       private readonly serviceRepo: Repository<Service>,
   
-    //   private readonly sendGridService: SendGridService,
     ) {}
   
     async createBooking(
@@ -60,11 +58,7 @@ import {
         state: BookingState.PENDING,
       });
   
-    //   await this.sendGridService.sendEmail(
-    //     client.email,
-    //     'Booking Created - Awaiting Confirmation',
-    //     `Thanks for booking ${service.name}. We'll notify you when the photographer confirms or cancels.`,
-    //   );
+
   
       return this.bookingRepo.save(booking);
     }
@@ -87,20 +81,7 @@ import {
       booking.state = newStatus;
       const updated = await this.bookingRepo.save(booking);
   
-      // Enviar correo solo si es relevante
-      if ([BookingState.ACTIVE, BookingState.CANCELLED].includes(newStatus)) {
-        const subject =
-          newStatus === BookingState.ACTIVE
-            ? 'Booking Confirmed'
-            : 'Booking Cancelled';
-  
-        const message =
-          newStatus === BookingState.ACTIVE
-            ? `Your booking for ${booking.service.name} has been confirmed.`
-            : `Your booking for ${booking.service.name} has been cancelled.`;
-  
-        // await this.sendGridService.sendEmail(booking.client.email, subject, message);
-      }
+
   
       return updated;
     }
