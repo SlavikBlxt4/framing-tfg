@@ -142,10 +142,13 @@ describe('ServicesController', () => {
 
   describe('deleteService', () => {
     it('should return 200 when service is deleted', async () => {
+      const req = { user: { userId: 1 } } as any;
       const res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       } as any;
+
+      await controller.deleteService(10, req, res);
 
       expect(servicesService.deleteService).toHaveBeenCalledWith(10, 1);
       expect(res.status).toHaveBeenCalledWith(200);
