@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Service } from './service.entity';
@@ -21,8 +25,13 @@ export class ServicesService {
     private readonly categoryRepo: Repository<Category>,
   ) {}
 
-  async createService(dto: CreateServiceDto, photographerId: number): Promise<Service> {
-    const photographer = await this.userRepo.findOne({ where: { id: photographerId } });
+  async createService(
+    dto: CreateServiceDto,
+    photographerId: number,
+  ): Promise<Service> {
+    const photographer = await this.userRepo.findOne({
+      where: { id: photographerId },
+    });
     if (!photographer) {
       throw new NotFoundException('Photographer not found');
     }
@@ -31,7 +40,9 @@ export class ServicesService {
       throw new ForbiddenException('User is not a photographer');
     }
 
-    const category = await this.categoryRepo.findOne({ where: { id: dto.categoryId } });
+    const category = await this.categoryRepo.findOne({
+      where: { id: dto.categoryId },
+    });
     if (!category) {
       throw new NotFoundException('Category not found');
     }
@@ -59,7 +70,10 @@ export class ServicesService {
     `);
   }
 
-  async deleteService(serviceId: number, photographerId: number): Promise<boolean> {
+  async deleteService(
+    serviceId: number,
+    photographerId: number,
+  ): Promise<boolean> {
     const service = await this.serviceRepo.findOne({
       where: { id: serviceId },
       relations: ['photographer'],
@@ -76,14 +90,19 @@ export class ServicesService {
   }
 
   async findServiceById(id: number): Promise<Service> {
-    const service = await this.serviceRepo.findOne({ where: { id }, relations: ['category', 'photographer'] });
+    const service = await this.serviceRepo.findOne({
+      where: { id },
+      relations: ['category', 'photographer'],
+    });
     if (!service) {
       throw new NotFoundException('Service not found');
     }
     return service;
   }
 
-  async getServicesByCategoryName(categoryName: string): Promise<ServiceResponseDto[]> {
+  async getServicesByCategoryName(
+    categoryName: string,
+  ): Promise<ServiceResponseDto[]> {
     const services = await this.serviceRepo
       .createQueryBuilder('s')
       .innerJoinAndSelect('s.category', 'category')

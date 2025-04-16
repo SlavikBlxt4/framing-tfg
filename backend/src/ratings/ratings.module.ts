@@ -7,9 +7,7 @@ import { User } from '../users/user.entity';
 import { Service } from '../services/service.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Rating, User, Service]),
-  ],
+  imports: [TypeOrmModule.forFeature([Rating, User, Service])],
   controllers: [RatingsController],
   providers: [RatingsService],
 })

@@ -64,7 +64,6 @@ describe('ServicesController', () => {
         description: 'Categoría para bodas',
         services: [],
       });
-      
 
       await controller.createService(
         {
@@ -79,10 +78,17 @@ describe('ServicesController', () => {
         res,
       );
 
-      expect(categoryRepo.findOne).toHaveBeenCalledWith({ where: { name: 'Boda' } });
-      expect(servicesService.createService).toHaveBeenCalledWith(expect.objectContaining({ categoryId: 5 }), 1);
+      expect(categoryRepo.findOne).toHaveBeenCalledWith({
+        where: { name: 'Boda' },
+      });
+      expect(servicesService.createService).toHaveBeenCalledWith(
+        expect.objectContaining({ categoryId: 5 }),
+        1,
+      );
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ name: 'Sesión retrato' }));
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'Sesión retrato' }),
+      );
     });
 
     it('should return 400 if category not found', async () => {
@@ -108,16 +114,25 @@ describe('ServicesController', () => {
       );
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Estilo no encontrado' });
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Estilo no encontrado',
+      });
     });
   });
 
   describe('getTopRated', () => {
     it('should return top rated services', async () => {
       const mockTop: TopRatedServiceDto[] = [
-        { serviceId: 1, serviceName: 'Retrato', imageUrl: null, averageRating: 4.5 },
+        {
+          serviceId: 1,
+          serviceName: 'Retrato',
+          imageUrl: null,
+          averageRating: 4.5,
+        },
       ];
-      mockServicesService.getTop10HighestRatedServices = jest.fn().mockResolvedValue(mockTop);
+      mockServicesService.getTop10HighestRatedServices = jest
+        .fn()
+        .mockResolvedValue(mockTop);
 
       const result = await controller.getTopRated();
       expect(result).toEqual(mockTop);
@@ -127,16 +142,16 @@ describe('ServicesController', () => {
 
   describe('deleteService', () => {
     it('should return 200 when service is deleted', async () => {
-      const req = { user: { userId: 1 } } as any;
       const res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       } as any;
 
-
       expect(servicesService.deleteService).toHaveBeenCalledWith(10, 1);
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Service deleted successfully' });
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Service deleted successfully',
+      });
     });
 
     it('should return 403 when unauthorized to delete', async () => {
@@ -151,7 +166,9 @@ describe('ServicesController', () => {
       await controller.deleteService(11, req, res);
 
       expect(res.status).toHaveBeenCalledWith(403);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Unauthorized to delete this service' });
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Unauthorized to delete this service',
+      });
     });
   });
 
@@ -168,11 +185,15 @@ describe('ServicesController', () => {
         },
       ];
 
-      mockServicesService.getServicesByCategoryName = jest.fn().mockResolvedValue(mockDtos);
+      mockServicesService.getServicesByCategoryName = jest
+        .fn()
+        .mockResolvedValue(mockDtos);
 
       const result = await controller.findByCategory('producto');
       expect(result).toEqual(mockDtos);
-      expect(servicesService.getServicesByCategoryName).toHaveBeenCalledWith('producto');
+      expect(servicesService.getServicesByCategoryName).toHaveBeenCalledWith(
+        'producto',
+      );
     });
   });
 });

@@ -17,9 +17,22 @@ describe('ServicesService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ServicesService,
-        { provide: getRepositoryToken(Service), useValue: { create: jest.fn(), save: jest.fn(), findOne: jest.fn(), query: jest.fn(), remove: jest.fn(), createQueryBuilder: jest.fn() } },
+        {
+          provide: getRepositoryToken(Service),
+          useValue: {
+            create: jest.fn(),
+            save: jest.fn(),
+            findOne: jest.fn(),
+            query: jest.fn(),
+            remove: jest.fn(),
+            createQueryBuilder: jest.fn(),
+          },
+        },
         { provide: getRepositoryToken(User), useValue: { findOne: jest.fn() } },
-        { provide: getRepositoryToken(Category), useValue: { findOne: jest.fn() } },
+        {
+          provide: getRepositoryToken(Category),
+          useValue: { findOne: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -44,18 +57,30 @@ describe('ServicesService', () => {
 
     it('should throw if photographer not found', async () => {
       userRepo.findOne.mockResolvedValue(null);
-      await expect(service.createService(dto, 1)).rejects.toThrow(NotFoundException);
+      await expect(service.createService(dto, 1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw if user is not a photographer', async () => {
-      userRepo.findOne.mockResolvedValue({ id: 1, role: UserRole.CLIENT } as User);
-      await expect(service.createService(dto, 1)).rejects.toThrow(ForbiddenException);
+      userRepo.findOne.mockResolvedValue({
+        id: 1,
+        role: UserRole.CLIENT,
+      } as User);
+      await expect(service.createService(dto, 1)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should throw if category not found', async () => {
-      userRepo.findOne.mockResolvedValue({ id: 1, role: UserRole.PHOTOGRAPHER } as User);
+      userRepo.findOne.mockResolvedValue({
+        id: 1,
+        role: UserRole.PHOTOGRAPHER,
+      } as User);
       categoryRepo.findOne.mockResolvedValue(null);
-      await expect(service.createService(dto, 1)).rejects.toThrow(NotFoundException);
+      await expect(service.createService(dto, 1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should create and save the service', async () => {
@@ -91,7 +116,9 @@ describe('ServicesService', () => {
     });
 
     it('should return false if photographer is not owner', async () => {
-      serviceRepo.findOne.mockResolvedValue({ photographer: { id: 2 } } as Service);
+      serviceRepo.findOne.mockResolvedValue({
+        photographer: { id: 2 },
+      } as Service);
       const result = await service.deleteService(1, 1);
       expect(result).toBe(false);
     });
@@ -116,7 +143,9 @@ describe('ServicesService', () => {
 
     it('should throw if not found', async () => {
       serviceRepo.findOne.mockResolvedValue(null);
-      await expect(service.findServiceById(5)).rejects.toThrow(NotFoundException);
+      await expect(service.findServiceById(5)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

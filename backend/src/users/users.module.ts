@@ -8,9 +8,11 @@ import { Service } from 'src/services/service.entity';
 import { Booking } from 'src/bookings/booking.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Service, Booking]),  // Asegúrate de importar la entidad Service si la necesitas
-  AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([User, Service, Booking]), // Asegúrate de importar la entidad Service si la necesitas
+    AuthModule,
+  ],
   providers: [UsersService],
-  controllers: [UsersController]
+  controllers: [UsersController],
 })
 export class UsersModule {}

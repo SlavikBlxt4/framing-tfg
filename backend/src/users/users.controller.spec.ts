@@ -11,11 +11,10 @@ describe('UsersController', () => {
   const mockUsersService = {
     signup: jest.fn(),
     login: jest.fn(),
-    findById: jest.fn(), 
+    findById: jest.fn(),
     getServicesByPhotographerId: jest.fn(),
     getTop10PhotographersByBookings: jest.fn(),
   };
-  
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -69,7 +68,10 @@ describe('UsersController', () => {
       usersService.login.mockResolvedValue('fake-token');
 
       const result = await controller.login(dto);
-      expect(usersService.login).toHaveBeenCalledWith(dto.email, dto.password_hash);
+      expect(usersService.login).toHaveBeenCalledWith(
+        dto.email,
+        dto.password_hash,
+      );
       expect(result).toBe('fake-token');
     });
   });
@@ -94,7 +96,9 @@ describe('UsersController', () => {
           category: { name: 'Retrato' },
         },
       ];
-      usersService.getServicesByPhotographerId.mockResolvedValue(services as any);
+      usersService.getServicesByPhotographerId.mockResolvedValue(
+        services as any,
+      );
 
       const result = await controller.getMyServices(req);
       expect(usersService.getServicesByPhotographerId).toHaveBeenCalledWith(1);
@@ -118,15 +122,17 @@ describe('UsersController', () => {
         },
       } as any;
 
-      await expect(
-        controller.getMyServices(req)
-      ).rejects.toThrow(ForbiddenException);
+      await expect(controller.getMyServices(req)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
   describe('getTop10Photographers', () => {
     it('should return result from usersService.getTop10PhotographersByBookings', async () => {
-      const top = [{ photographer_id: 1, photographer_name: 'Ana', booking_count: 12 }];
+      const top = [
+        { photographer_id: 1, photographer_name: 'Ana', booking_count: 12 },
+      ];
       usersService.getTop10PhotographersByBookings.mockResolvedValue(top);
 
       const result = await controller.getTop10Photographers();

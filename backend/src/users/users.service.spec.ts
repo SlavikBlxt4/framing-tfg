@@ -60,7 +60,13 @@ describe('UsersService', () => {
     it('should throw if email already exists', async () => {
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
       await expect(
-        usersService.signup('Laura', 'laura@example.com', 'pass', '600123456', UserRole.CLIENT),
+        usersService.signup(
+          'Laura',
+          'laura@example.com',
+          'pass',
+          '600123456',
+          UserRole.CLIENT,
+        ),
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -78,7 +84,9 @@ describe('UsersService', () => {
         UserRole.CLIENT,
       );
 
-      expect(userRepo.create).toHaveBeenCalledWith(expect.objectContaining({ email: 'laura@example.com' }));
+      expect(userRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({ email: 'laura@example.com' }),
+      );
       expect(userRepo.save).toHaveBeenCalledWith(saveMock);
       expect(result).toEqual(saveMock);
     });
@@ -87,7 +95,9 @@ describe('UsersService', () => {
   describe('login', () => {
     it('should throw if user not found', async () => {
       userRepo.findOne.mockResolvedValue(null);
-      await expect(usersService.login('x@x.com', 'pass')).rejects.toThrow(UnauthorizedException);
+      await expect(usersService.login('x@x.com', 'pass')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw if password does not match', async () => {
@@ -96,7 +106,9 @@ describe('UsersService', () => {
         password_hash: await bcrypt.hash('otherpass', 10),
       } as User);
 
-      await expect(usersService.login('x@x.com', 'wrongpass')).rejects.toThrow(UnauthorizedException);
+      await expect(usersService.login('x@x.com', 'wrongpass')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should return a token if credentials are valid', async () => {
@@ -118,7 +130,9 @@ describe('UsersService', () => {
 
   describe('getServicesByPhotographerId', () => {
     it('should return services from query builder', async () => {
-      const getMany = jest.fn().mockResolvedValue([{ id: 1, name: 'Test Service' }]);
+      const getMany = jest
+        .fn()
+        .mockResolvedValue([{ id: 1, name: 'Test Service' }]);
       const mockQB = {
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
@@ -143,7 +157,9 @@ describe('UsersService', () => {
 
   describe('getTop10PhotographersByBookings', () => {
     it('should execute raw SQL query', async () => {
-      const expected = [{ photographer_id: 1, photographer_name: 'Ana', booking_count: 12 }];
+      const expected = [
+        { photographer_id: 1, photographer_name: 'Ana', booking_count: 12 },
+      ];
       userRepo.query.mockResolvedValue(expected);
       const result = await usersService.getTop10PhotographersByBookings();
       expect(result).toEqual(expected);

@@ -6,7 +6,11 @@ import { User } from '../users/user.entity';
 import { Service } from '../services/service.entity';
 import { Repository } from 'typeorm';
 import { BookingState } from './enums/booking-state.enum';
-import { ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 
 describe('BookingsService', () => {
   let service: BookingsService;
@@ -18,9 +22,21 @@ describe('BookingsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BookingsService,
-        { provide: getRepositoryToken(Booking), useValue: { find: jest.fn(), create: jest.fn(), save: jest.fn(), findOne: jest.fn(), query: jest.fn() } },
+        {
+          provide: getRepositoryToken(Booking),
+          useValue: {
+            find: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+            findOne: jest.fn(),
+            query: jest.fn(),
+          },
+        },
         { provide: getRepositoryToken(User), useValue: { findOne: jest.fn() } },
-        { provide: getRepositoryToken(Service), useValue: { findOne: jest.fn() } },
+        {
+          provide: getRepositoryToken(Service),
+          useValue: { findOne: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -37,28 +53,40 @@ describe('BookingsService', () => {
   describe('createBooking', () => {
     it('should throw if client not found', async () => {
       userRepo.findOne.mockResolvedValue(null);
-      await expect(service.createBooking(1, 1, new Date())).rejects.toThrow(NotFoundException);
+      await expect(service.createBooking(1, 1, new Date())).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw if service not found', async () => {
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
       serviceRepo.findOne.mockResolvedValue(null);
-      await expect(service.createBooking(1, 2, new Date())).rejects.toThrow(NotFoundException);
+      await expect(service.createBooking(1, 2, new Date())).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw if date is already booked', async () => {
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
-      serviceRepo.findOne.mockResolvedValue({ id: 2, photographer: {} } as Service);
-      bookingRepo.find.mockResolvedValue([{ date: new Date('2025-05-01T10:00:00Z') } as Booking]);
+      serviceRepo.findOne.mockResolvedValue({
+        id: 2,
+        photographer: {},
+      } as Service);
+      bookingRepo.find.mockResolvedValue([
+        { date: new Date('2025-05-01T10:00:00Z') } as Booking,
+      ]);
 
       await expect(
-        service.createBooking(1, 2, new Date('2025-05-01T10:00:00Z'))
+        service.createBooking(1, 2, new Date('2025-05-01T10:00:00Z')),
       ).rejects.toThrow(ConflictException);
     });
 
     it('should create and save a new booking', async () => {
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
-      serviceRepo.findOne.mockResolvedValue({ id: 2, photographer: {} } as Service);
+      serviceRepo.findOne.mockResolvedValue({
+        id: 2,
+        photographer: {},
+      } as Service);
       bookingRepo.find.mockResolvedValue([]);
       const newBooking = { id: 99 } as Booking;
       bookingRepo.create.mockReturnValue(newBooking);
@@ -72,7 +100,9 @@ describe('BookingsService', () => {
   describe('updateBookingStatus', () => {
     it('should throw if booking not found', async () => {
       bookingRepo.findOne.mockResolvedValue(null);
-      await expect(service.updateBookingStatus(1, 1, BookingState.DONE)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.updateBookingStatus(1, 1, BookingState.DONE),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw if photographer is not authorized', async () => {
@@ -81,7 +111,9 @@ describe('BookingsService', () => {
         service: { photographer: { id: 999 } },
       } as any);
 
-      await expect(service.updateBookingStatus(1, 1, BookingState.DONE)).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.updateBookingStatus(1, 1, BookingState.DONE),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should update and save the booking status', async () => {
@@ -92,7 +124,10 @@ describe('BookingsService', () => {
       } as any;
 
       bookingRepo.findOne.mockResolvedValue(mockBooking);
-      bookingRepo.save.mockResolvedValue({ ...mockBooking, state: BookingState.DONE });
+      bookingRepo.save.mockResolvedValue({
+        ...mockBooking,
+        state: BookingState.DONE,
+      });
 
       const result = await service.updateBookingStatus(1, 1, BookingState.DONE);
       expect(result.state).toBe(BookingState.DONE);
@@ -129,7 +164,10 @@ describe('BookingsService', () => {
       bookingRepo.query.mockResolvedValue(mockResult);
       const result = await service.getServicesToRate(5);
       expect(result).toEqual(mockResult);
-      expect(bookingRepo.query).toHaveBeenCalledWith(expect.stringContaining('SELECT'), [5]);
+      expect(bookingRepo.query).toHaveBeenCalledWith(
+        expect.stringContaining('SELECT'),
+        [5],
+      );
     });
   });
 

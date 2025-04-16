@@ -18,9 +18,15 @@ describe('RatingsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RatingsService,
-        { provide: getRepositoryToken(Rating), useValue: { findOne: jest.fn(), create: jest.fn(), save: jest.fn() } },
+        {
+          provide: getRepositoryToken(Rating),
+          useValue: { findOne: jest.fn(), create: jest.fn(), save: jest.fn() },
+        },
         { provide: getRepositoryToken(User), useValue: { findOne: jest.fn() } },
-        { provide: getRepositoryToken(Service), useValue: { findOne: jest.fn() } },
+        {
+          provide: getRepositoryToken(Service),
+          useValue: { findOne: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -43,13 +49,17 @@ describe('RatingsService', () => {
 
     it('should throw if client not found', async () => {
       userRepo.findOne.mockResolvedValue(null);
-      await expect(service.createRating(dto, 1)).rejects.toThrow(NotFoundException);
+      await expect(service.createRating(dto, 1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw if service not found', async () => {
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
       serviceRepo.findOne.mockResolvedValue(null);
-      await expect(service.createRating(dto, 1)).rejects.toThrow(NotFoundException);
+      await expect(service.createRating(dto, 1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw if rating already exists', async () => {
@@ -57,7 +67,9 @@ describe('RatingsService', () => {
       serviceRepo.findOne.mockResolvedValue({ id: 10 } as Service);
       ratingRepo.findOne.mockResolvedValue({ id: 99 } as Rating);
 
-      await expect(service.createRating(dto, 1)).rejects.toThrow(ConflictException);
+      await expect(service.createRating(dto, 1)).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('should create and return a new rating', async () => {

@@ -24,7 +24,9 @@ describe('BookingsController', () => {
 
   const mockBookingService: Partial<jest.Mocked<BookingsService>> = {
     createBooking: jest.fn().mockResolvedValue(mockBooking),
-    updateBookingStatus: jest.fn().mockResolvedValue({ ...mockBooking, state: BookingState.ACTIVE }),
+    updateBookingStatus: jest
+      .fn()
+      .mockResolvedValue({ ...mockBooking, state: BookingState.ACTIVE }),
     getClientBookingHistory: jest.fn().mockResolvedValue([]),
     getServicesToRate: jest.fn().mockResolvedValue([]),
     findPendingByPhotographer: jest.fn().mockResolvedValue([]),
@@ -56,14 +58,24 @@ describe('BookingsController', () => {
         json: jest.fn(),
       };
 
-      await controller.createBooking({ serviceId: 2, dateTime: '2025-06-01T10:00:00Z' }, req, res);
+      await controller.createBooking(
+        { serviceId: 2, dateTime: '2025-06-01T10:00:00Z' },
+        req,
+        res,
+      );
 
-      expect(bookingService.createBooking).toHaveBeenCalledWith(1, 2, new Date('2025-06-01T10:00:00Z'));
+      expect(bookingService.createBooking).toHaveBeenCalledWith(
+        1,
+        2,
+        new Date('2025-06-01T10:00:00Z'),
+      );
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        bookingId: 1,
-        status: BookingState.PENDING,
-      }));
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          bookingId: 1,
+          status: BookingState.PENDING,
+        }),
+      );
     });
   });
 
@@ -77,12 +89,18 @@ describe('BookingsController', () => {
 
       await controller.confirmBooking(1, req, res);
 
-      expect(bookingService.updateBookingStatus).toHaveBeenCalledWith(1, 99, BookingState.ACTIVE);
+      expect(bookingService.updateBookingStatus).toHaveBeenCalledWith(
+        1,
+        99,
+        BookingState.ACTIVE,
+      );
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        bookingId: 1,
-        status: BookingState.ACTIVE,
-      }));
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          bookingId: 1,
+          status: BookingState.ACTIVE,
+        }),
+      );
     });
   });
 
@@ -94,14 +112,22 @@ describe('BookingsController', () => {
         json: jest.fn(),
       };
 
-      mockBookingService.updateBookingStatus = jest.fn().mockResolvedValue({ ...mockBooking, state: BookingState.CANCELLED });
+      mockBookingService.updateBookingStatus = jest
+        .fn()
+        .mockResolvedValue({ ...mockBooking, state: BookingState.CANCELLED });
 
       await controller.cancelBooking(1, req, res);
 
-      expect(bookingService.updateBookingStatus).toHaveBeenCalledWith(1, 99, BookingState.CANCELLED);
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        status: BookingState.CANCELLED,
-      }));
+      expect(bookingService.updateBookingStatus).toHaveBeenCalledWith(
+        1,
+        99,
+        BookingState.CANCELLED,
+      );
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: BookingState.CANCELLED,
+        }),
+      );
     });
   });
 
