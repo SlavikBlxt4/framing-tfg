@@ -133,7 +133,6 @@ describe('ServicesController', () => {
         json: jest.fn(),
       } as any;
 
-      const result = await controller.deleteService(10, req, res);
 
       expect(servicesService.deleteService).toHaveBeenCalledWith(10, 1);
       expect(res.status).toHaveBeenCalledWith(200);
