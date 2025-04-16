@@ -22,9 +22,6 @@ import {
     @IsOptional()
     imageUrl?: string;
   
-    @IsString()
-    @IsOptional()
-    availability?: string;
   
     @IsInt()
     categoryId: number;

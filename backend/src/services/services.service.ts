@@ -41,7 +41,6 @@ export class ServicesService {
       description: dto.description,
       price: dto.price,
       imageUrl: dto.imageUrl,
-      availability: dto.availability,
       photographer,
       category,
     });

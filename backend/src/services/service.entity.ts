@@ -43,7 +43,5 @@ import { Rating } from 'src/ratings/rating.entity';
     @JoinColumn({ name: 'category_id' })
     category: Category;
   
-    @Column({ nullable: true, type: 'text' })
-    availability: string; // Puede almacenar JSON como string
   }
   
