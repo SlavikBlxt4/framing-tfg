@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: 637423641110.dkr.ecr.us-east-1.amazonaws.com/framing-backend:latest
     ports:
       - "3000:3000"
     env_file:
