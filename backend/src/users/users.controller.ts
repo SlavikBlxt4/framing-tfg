@@ -28,6 +28,10 @@ export class UsersController {
       body.role as UserRole,
     );
   }
+  @Get('hello')
+  async helloWorld(): Promise<string> {
+    return 'Hello, world!';
+  }
 
   @Post('login')
   async login(@Body() body: Partial<User>): Promise<string> {
