@@ -28,10 +28,7 @@ export class UsersController {
       body.role as UserRole,
     );
   }
-  @Get('hello')
-  async helloWorld(): Promise<string> {
-    return 'Prueba final?¿!';
-  }
+
 
   @Post('login')
   async login(@Body() body: Partial<User>): Promise<string> {
