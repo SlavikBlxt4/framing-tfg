@@ -30,7 +30,7 @@ export class UsersController {
   }
   @Get('hello')
   async helloWorld(): Promise<string> {
-    return 'Prueba final?¿!'; //espero
+    return 'Prueba final?¿!';
   }
 
   @Post('login')
