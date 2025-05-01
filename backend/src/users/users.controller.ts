@@ -8,51 +8,58 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from './user.entity';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { Request } from 'express';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SignupDto } from './dto/signup.dto';
+import { LoginDto } from './dto/login.dto';
+import { UserResponseDto } from './dto/user-response.dto';
 import { ServiceResponseDto } from '../services/dto/service-response.dto';
 import { UserRole } from './user.entity';
+import { TokenResponseDto } from './dto/token-response.dto';
+import { TopPhotographerDto } from './dto/top-photographer.dto';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('signup')
-  async signup(@Body() body: Partial<User>): Promise<User> {
+  @ApiOperation({ summary: 'Registrar nuevo usuario' })
+  @ApiBody({ type: SignupDto })
+  @ApiResponse({ status: 201, description: 'Usuario registrado', type: UserResponseDto })
+  async signup(@Body() body: SignupDto): Promise<UserResponseDto> {
     return this.usersService.signup(
       body.name,
       body.email,
-      body.password_hash,
+      body.password,
       body.phone_number,
-      body.role as UserRole,
+      body.role,
     );
   }
 
-
   @Post('login')
-  async login(@Body() body: Partial<User>): Promise<string> {
-    return this.usersService.login(body.email, body.password_hash);
+  @ApiOperation({ summary: 'Iniciar sesión de usuario' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({ status: 200, description: 'JWT devuelto', type: TokenResponseDto })
+  async login(@Body() body: LoginDto): Promise<string> {
+    return this.usersService.login(body.email, body.password);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('services')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Ver servicios del fotógrafo autenticado' })
+  @ApiResponse({ status: 200, description: 'Servicios encontrados', type: [ServiceResponseDto] })
   async getMyServices(@Req() req: Request): Promise<ServiceResponseDto[]> {
     const userId = req.user['userId'];
     const role = req.user['role'];
-    console.log('User ID:', userId);
-    console.log('User Role:', role);
-    console.log('Request User:', req.user);
 
     if (role !== UserRole.PHOTOGRAPHER) {
-      throw new ForbiddenException(
-        'Solo los fotógrafos pueden ver sus servicios.',
-      );
+      throw new ForbiddenException('Solo los fotógrafos pueden ver sus servicios.');
     }
 
-    const services =
-      await this.usersService.getServicesByPhotographerId(userId);
-
+    const services = await this.usersService.getServicesByPhotographerId(userId);
     return services.map((s) => ({
       id: s.id,
       name: s.name,
@@ -64,6 +71,8 @@ export class UsersController {
   }
 
   @Get('top-photographers')
+  @ApiOperation({ summary: 'Obtener top 10 fotógrafos por reservas' })
+  @ApiResponse({ status: 200, type: [TopPhotographerDto] })
   async getTop10Photographers() {
     return this.usersService.getTop10PhotographersByBookings();
   }
