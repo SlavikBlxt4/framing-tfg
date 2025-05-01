@@ -74,7 +74,6 @@ export class User {
   @IsOptional()
   url_profile_image?: string;
 
-  Relaciones;
   @OneToMany(() => Booking, (booking) => booking.client)
   bookings: Booking[];
 

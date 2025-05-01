@@ -19,7 +19,16 @@ import { Request, Response } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from '../categories/category.entity';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+} from '@nestjs/swagger';
 
+@ApiTags('services') // Sección "services" en Swagger
 @Controller('photographer/services')
 export class ServicesController {
   constructor(
@@ -31,6 +40,11 @@ export class ServicesController {
 
   @UseGuards(JwtAuthGuard)
   @Post('create')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Crear un nuevo servicio fotográfico' })
+  @ApiBody({ type: CreateServiceDto })
+  @ApiResponse({ status: 200, description: 'Servicio creado con éxito', type: ServiceResponseDto })
+  @ApiResponse({ status: 400, description: 'Estilo (categoría) no encontrado' })
   async createService(
     @Body() dto: CreateServiceDto,
     @Req() req: Request,
@@ -52,10 +66,7 @@ export class ServicesController {
       dto.categoryId = category.id;
     }
 
-    const service = await this.servicesService.createService(
-      dto,
-      photographerId,
-    );
+    const service = await this.servicesService.createService(dto, photographerId);
 
     const responseDto: ServiceResponseDto = {
       id: service.id,
@@ -70,12 +81,23 @@ export class ServicesController {
   }
 
   @Get('top-rated')
+  @ApiOperation({ summary: 'Obtener los 10 servicios mejor valorados' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de los servicios con mayor puntuación promedio',
+    type: [TopRatedServiceDto],
+  })
   async getTopRated(): Promise<TopRatedServiceDto[]> {
     return this.servicesService.getTop10HighestRatedServices();
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('delete/:serviceId')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Eliminar un servicio del fotógrafo autenticado' })
+  @ApiParam({ name: 'serviceId', type: Number })
+  @ApiResponse({ status: 200, description: 'Servicio eliminado correctamente' })
+  @ApiResponse({ status: 403, description: 'No autorizado para eliminar este servicio' })
   async deleteService(
     @Param('serviceId') serviceId: number,
     @Req() req: Request,
@@ -83,22 +105,18 @@ export class ServicesController {
   ) {
     const photographerId = req.user['userId'];
 
-    const deleted = await this.servicesService.deleteService(
-      serviceId,
-      photographerId,
-    );
+    const deleted = await this.servicesService.deleteService(serviceId, photographerId);
     if (deleted) {
-      return res
-        .status(HttpStatus.OK)
-        .json({ message: 'Service deleted successfully' });
+      return res.status(HttpStatus.OK).json({ message: 'Service deleted successfully' });
     } else {
-      return res
-        .status(HttpStatus.FORBIDDEN)
-        .json({ message: 'Unauthorized to delete this service' });
+      return res.status(HttpStatus.FORBIDDEN).json({ message: 'Unauthorized to delete this service' });
     }
   }
 
   @Get(':categoryName')
+  @ApiOperation({ summary: 'Obtener servicios por nombre de categoría' })
+  @ApiParam({ name: 'categoryName', type: String })
+  @ApiResponse({ status: 200, description: 'Servicios encontrados', type: [ServiceResponseDto] })
   async findByCategory(
     @Param('categoryName') categoryName: string,
   ): Promise<ServiceResponseDto[]> {
