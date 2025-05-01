@@ -35,9 +35,9 @@ export class Service {
   imageUrl: string;
 
 
-  @Column({ type: 'int', name: 'minimum_hours', nullable: false })
+  @Column({ type: 'int', name: 'minimum_minutes', nullable: false })
   @ApiProperty({ example: 2, description: 'Horas mínimas contratables' })
-  minimum_hours: number;
+  minimum_minutes: number;
 
   @Column({ type: 'numeric', name: 'discount', precision: 5, scale: 2, nullable: true })
   @ApiPropertyOptional({ example: 10.0, description: 'Descuento aplicado (%)' })

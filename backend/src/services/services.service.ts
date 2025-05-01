@@ -54,6 +54,8 @@ export class ServicesService {
       imageUrl: dto.imageUrl,
       photographer,
       category,
+      minimum_minutes: dto.minimum_minutes,
+      discount: dto.discount,
     });
 
     return this.serviceRepo.save(service);
@@ -121,7 +123,8 @@ export class ServicesService {
       price: service.price,
       imageUrl: service.imageUrl,
       categoryName: service.category?.name,
-      minimum_hours: service.minimum_hours,
+      minimum_minutes: service.minimum_minutes,
+      discount: service.discount,
     };
   }
 }

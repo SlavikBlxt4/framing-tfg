@@ -20,8 +20,8 @@ export class ServiceResponseDto {
   categoryName: string;
 
 
-  @ApiProperty({ example: 2 })
-  minimum_hours: number;
+  @ApiProperty({ example: 30 })
+  minimum_minutes: number;
 
   @ApiPropertyOptional({ example: 10.0 })
   discount?: number;

@@ -67,7 +67,7 @@ export class UsersController {
       price: s.price,
       imageUrl: s.imageUrl,
       categoryName: s.category?.name,
-      minimum_hours: s.minimum_hours,
+      minimum_minutes: s.minimum_minutes,
     }));
   }
 

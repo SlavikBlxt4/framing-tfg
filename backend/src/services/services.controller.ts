@@ -75,7 +75,7 @@ export class ServicesController {
       price: service.price,
       imageUrl: service.imageUrl,
       categoryName: service.category.name,
-      minimum_hours: service.minimum_hours,
+      minimum_minutes: service.minimum_minutes,
       discount: service.discount,
     };
 

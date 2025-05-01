@@ -39,10 +39,10 @@ export class CreateServiceDto {
   categoryName?: string;
 
 
-  @ApiProperty({ example: 2 })
+  @ApiProperty({ example: 30 })
   @IsInt()
   @Min(1)
-  minimum_hours: number;
+  minimum_minutes: number;
 
   @ApiPropertyOptional({ example: 10.0 })
   @IsNumber()
