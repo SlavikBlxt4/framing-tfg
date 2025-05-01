@@ -75,6 +75,8 @@ export class ServicesController {
       price: service.price,
       imageUrl: service.imageUrl,
       categoryName: service.category.name,
+      minimum_hours: service.minimum_hours,
+      discount: service.discount,
     };
 
     return res.status(HttpStatus.OK).json(responseDto);

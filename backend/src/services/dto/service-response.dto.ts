@@ -1,8 +1,28 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
 export class ServiceResponseDto {
+  @ApiProperty({ example: 1 })
   id: number;
+
+  @ApiProperty({ example: 'Sesión de retrato' })
   name: string;
+
+  @ApiProperty({ example: 'Fotos profesionales en estudio con fondo blanco' })
   description: string;
+
+  @ApiProperty({ example: 150.0 })
   price: number;
-  imageUrl: string;
+
+  @ApiPropertyOptional({ example: 'https://example.com/foto.jpg' })
+  imageUrl?: string;
+
+  @ApiProperty({ example: 'Retrato' })
   categoryName: string;
+
+
+  @ApiProperty({ example: 2 })
+  minimum_hours: number;
+
+  @ApiPropertyOptional({ example: 10.0 })
+  discount?: number;
 }
