@@ -53,6 +53,8 @@ describe('ServicesService', () => {
       price: 300,
       imageUrl: 'img.jpg',
       categoryId: 5,
+      minimum_minutes: 120,
+      discount: 10,
     };
 
     it('should throw if photographer not found', async () => {

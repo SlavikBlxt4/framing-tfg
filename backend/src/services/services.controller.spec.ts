@@ -73,6 +73,8 @@ describe('ServicesController', () => {
           imageUrl: 'img.jpg',
           categoryId: null,
           categoryName: 'Boda',
+          minimum_minutes: 120,
+          discount: 10,
         },
         req,
         res,
@@ -108,6 +110,8 @@ describe('ServicesController', () => {
           imageUrl: 'img.jpg',
           categoryId: null,
           categoryName: 'Inexistente',
+          minimum_minutes: 120,
+          discount: 10,
         },
         req,
         res,
@@ -185,6 +189,8 @@ describe('ServicesController', () => {
           price: 90,
           imageUrl: 'url.jpg',
           categoryName: 'Producto',
+          minimum_minutes: 60,
+          discount: 0,
         },
       ];
 
