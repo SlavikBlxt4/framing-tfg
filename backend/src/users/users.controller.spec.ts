@@ -40,7 +40,7 @@ describe('UsersController', () => {
       const dto = {
         name: 'Laura',
         email: 'laura@example.com',
-        password_hash: 'abc123',
+        password: 'abc123',
         phone_number: '600123456',
         role: UserRole.CLIENT,
       };
@@ -51,7 +51,7 @@ describe('UsersController', () => {
       expect(usersService.signup).toHaveBeenCalledWith(
         dto.name,
         dto.email,
-        dto.password_hash,
+        dto.password,
         dto.phone_number,
         dto.role,
       );
@@ -63,14 +63,14 @@ describe('UsersController', () => {
     it('should call usersService.login and return a token', async () => {
       const dto = {
         email: 'laura@example.com',
-        password_hash: 'abc123',
+        password: 'abc123',
       };
       usersService.login.mockResolvedValue('fake-token');
 
       const result = await controller.login(dto);
       expect(usersService.login).toHaveBeenCalledWith(
         dto.email,
-        dto.password_hash,
+        dto.password,
       );
       expect(result).toBe('fake-token');
     });
