@@ -10,7 +10,7 @@ export class CreateBookingDto {
   serviceId: number;
 
   @ApiProperty({
-    example: '2025-04-13T16:00:00',
+    example: '2026-05-13T16:00:00', //la fecha no puede ser en el pasado
     description: 'Fecha y hora de la reserva en formato ISO 8601',
   })
   @IsISO8601()
