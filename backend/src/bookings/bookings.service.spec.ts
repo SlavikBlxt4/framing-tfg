@@ -67,21 +67,42 @@ describe('BookingsService', () => {
     });
 
     it('should throw if date is already booked', async () => {
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 10); // 10 days from now
+
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
       serviceRepo.findOne.mockResolvedValue({
-        id: 2,
-        photographer: {},
+      id: 2,
+      photographer: {},
       } as Service);
       bookingRepo.find.mockResolvedValue([
-        { date: new Date('2025-05-01T10:00:00Z') } as Booking,
+      { date: futureDate } as Booking,
       ]);
 
       await expect(
-        service.createBooking(1, 2, new Date('2025-05-01T10:00:00Z')),
+      service.createBooking(1, 2, futureDate),
+      ).rejects.toThrow(ConflictException);
+    });
+
+    it('should throw if booking date is in the past', async () => {
+      const pastDate = new Date();
+      pastDate.setDate(pastDate.getDate() - 1); // 1 day before now
+
+      userRepo.findOne.mockResolvedValue({ id: 1 } as User);
+      serviceRepo.findOne.mockResolvedValue({
+      id: 2,
+      photographer: {},
+      } as Service);
+
+      await expect(
+      service.createBooking(1, 2, pastDate),
       ).rejects.toThrow(ConflictException);
     });
 
     it('should create and save a new booking', async () => {
+      const mockNow = new Date('2026-05-01T10:00:00Z');
+      jest.spyOn(global.Date, 'now').mockImplementation(() => mockNow.getTime());
+    
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
       serviceRepo.findOne.mockResolvedValue({
         id: 2,
@@ -91,9 +112,11 @@ describe('BookingsService', () => {
       const newBooking = { id: 99 } as Booking;
       bookingRepo.create.mockReturnValue(newBooking);
       bookingRepo.save.mockResolvedValue(newBooking);
-
-      const result = await service.createBooking(1, 2, new Date());
+    
+      const result = await service.createBooking(1, 2, new Date('2026-05-02T10:00:00Z'));
       expect(result).toEqual(newBooking);
+    
+      jest.restoreAllMocks(); // Restore original Date behavior
     });
   });
 
