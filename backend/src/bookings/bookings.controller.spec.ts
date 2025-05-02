@@ -59,7 +59,7 @@ describe('BookingsController', () => {
       };
 
       await controller.createBooking(
-        { serviceId: 2, dateTime: '2025-06-01T10:00:00Z' },
+        { serviceId: 2, dateTime: '2025-06-01T10:00:00Z', bookedMinutes: 120 },
         req,
         res,
       );
@@ -68,6 +68,7 @@ describe('BookingsController', () => {
         1,
         2,
         new Date('2025-06-01T10:00:00Z'),
+        120,
       );
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(

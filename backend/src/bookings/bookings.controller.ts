@@ -50,11 +50,13 @@ export class BookingsController {
     const clientId = req.user['userId'];
     const serviceId = dto.serviceId;
     const date = new Date(dto.dateTime);
+    const bookedMinutes = dto.bookedMinutes;
 
     const booking = await this.bookingService.createBooking(
       clientId,
       serviceId,
       date,
+      bookedMinutes,
     );
 
     const response: BookingResponseDto = {
@@ -65,6 +67,7 @@ export class BookingsController {
       clientName: booking.client.name,
       clientEmail: booking.client.email,
       status: booking.state,
+      bookedMinutes: booking.bookedMinutes,
     };
 
     return res.status(HttpStatus.OK).json(response);
@@ -95,6 +98,7 @@ export class BookingsController {
       clientName: booking.client.name,
       clientEmail: booking.client.email,
       status: booking.state,
+      bookedMinutes: booking.bookedMinutes,
     };
 
     return res.status(HttpStatus.OK).json(response);
@@ -125,6 +129,7 @@ export class BookingsController {
       clientName: booking.client.name,
       clientEmail: booking.client.email,
       status: booking.state,
+      bookedMinutes: booking.bookedMinutes,
     };
 
     return res.status(HttpStatus.OK).json(response);

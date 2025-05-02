@@ -37,6 +37,6 @@ export class Booking {
   @Column({ type: 'double precision', nullable: true })
   price: number;
 
-  @Column({ name: 'booked_hours', type: 'integer', nullable: true })
-  bookedHours: number;
+  @Column({ name: 'booked_minutes', type: 'integer', nullable: true })
+  bookedMinutes: number;
 }

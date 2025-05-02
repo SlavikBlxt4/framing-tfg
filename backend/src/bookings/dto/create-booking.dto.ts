@@ -15,4 +15,11 @@ export class CreateBookingDto {
   })
   @IsISO8601()
   dateTime: string;
+
+  @ApiProperty({
+    example: 120,
+    description: 'Duración de la reserva en minutos',
+  })
+  @IsInt()
+  bookedMinutes: number;
 }

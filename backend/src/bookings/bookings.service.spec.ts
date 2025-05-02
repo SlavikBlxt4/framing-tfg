@@ -53,7 +53,7 @@ describe('BookingsService', () => {
   describe('createBooking', () => {
     it('should throw if client not found', async () => {
       userRepo.findOne.mockResolvedValue(null);
-      await expect(service.createBooking(1, 1, new Date())).rejects.toThrow(
+      await expect(service.createBooking(1, 1, new Date(), 120), ).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -61,7 +61,7 @@ describe('BookingsService', () => {
     it('should throw if service not found', async () => {
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
       serviceRepo.findOne.mockResolvedValue(null);
-      await expect(service.createBooking(1, 2, new Date())).rejects.toThrow(
+      await expect(service.createBooking(1, 2, new Date(), 120)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -80,7 +80,7 @@ describe('BookingsService', () => {
       ]);
 
       await expect(
-      service.createBooking(1, 2, futureDate),
+      service.createBooking(1, 2, futureDate, 120),
       ).rejects.toThrow(ConflictException);
     });
 
@@ -95,7 +95,7 @@ describe('BookingsService', () => {
       } as Service);
 
       await expect(
-      service.createBooking(1, 2, pastDate),
+      service.createBooking(1, 2, pastDate, 120),
       ).rejects.toThrow(ConflictException);
     });
 
@@ -113,7 +113,7 @@ describe('BookingsService', () => {
       bookingRepo.create.mockReturnValue(newBooking);
       bookingRepo.save.mockResolvedValue(newBooking);
     
-      const result = await service.createBooking(1, 2, new Date('2026-05-02T10:00:00Z'));
+      const result = await service.createBooking(1, 2, new Date('2026-05-02T10:00:00Z'), 120);
       expect(result).toEqual(newBooking);
     
       jest.restoreAllMocks(); // Restore original Date behavior

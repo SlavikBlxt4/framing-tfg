@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsInt } from 'class-validator';
 
 export class BookingResponseDto {
   @ApiProperty({ example: 10 })
@@ -21,4 +22,11 @@ export class BookingResponseDto {
 
   @ApiProperty({ example: 'CONFIRMED' })
   status: string;
+
+  @ApiProperty({
+    example: 120,
+    description: 'Duración de la reserva en minutos',
+  })
+  @IsInt()
+  bookedMinutes: number;
 }

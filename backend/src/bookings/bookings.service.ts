@@ -28,9 +28,7 @@ export class BookingsService {
   ) {}
 
   async createBooking(
-    clientId: number,
-    serviceId: number,
-    date: Date,
+clientId: number, serviceId: number, date: Date, bookedMinutes: number,
   ): Promise<Booking> {
     const client = await this.userRepo.findOne({ where: { id: clientId } });
     if (!client) throw new NotFoundException('Cliente no encontrado');
