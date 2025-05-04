@@ -4,7 +4,10 @@ export class ServiceToRateDto {
   @ApiProperty({ example: 1, description: 'ID del servicio ya realizado' })
   serviceId: number;
 
-  @ApiProperty({ example: 'Sesión de retrato', description: 'Nombre del servicio' })
+  @ApiProperty({
+    example: 'Sesión de retrato',
+    description: 'Nombre del servicio',
+  })
   serviceName: string;
 
   @ApiProperty({
@@ -22,7 +25,10 @@ export class ServiceToRateDto {
   })
   imageUrl: string;
 
-  @ApiProperty({ example: 12, description: 'ID de la reserva vinculada al servicio' })
+  @ApiProperty({
+    example: 12,
+    description: 'ID de la reserva vinculada al servicio',
+  })
   bookingId: number;
 
   @ApiProperty({

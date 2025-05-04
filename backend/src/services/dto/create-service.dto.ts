@@ -38,7 +38,6 @@ export class CreateServiceDto {
   @IsOptional()
   categoryName?: string;
 
-
   @ApiProperty({ example: 30 })
   @IsInt()
   @Min(1)

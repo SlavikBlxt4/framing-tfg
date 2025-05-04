@@ -37,7 +37,8 @@ export class RatingsController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Datos inválidos o intento de calificar un servicio no contratado',
+    description:
+      'Datos inválidos o intento de calificar un servicio no contratado',
   })
   async rateService(
     @Body() dto: CreateRatingDto,

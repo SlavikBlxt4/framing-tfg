@@ -19,7 +19,6 @@ export class ServiceResponseDto {
   @ApiProperty({ example: 'Retrato' })
   categoryName: string;
 
-
   @ApiProperty({ example: 30 })
   minimum_minutes: number;
 

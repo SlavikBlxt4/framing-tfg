@@ -28,27 +28,32 @@ export class BookingsService {
   ) {}
 
   async createBooking(
-clientId: number, serviceId: number, date: Date, bookedMinutes: number,
+    clientId: number,
+    serviceId: number,
+    date: Date,
+    bookedMinutes: number,
   ): Promise<Booking> {
     const client = await this.userRepo.findOne({ where: { id: clientId } });
     if (!client) throw new NotFoundException('Cliente no encontrado');
-  
+
     const service = await this.serviceRepo.findOne({
       where: { id: serviceId },
       relations: ['photographer'],
     });
     if (!service) throw new NotFoundException('Servicio no encontrado');
-  
+
     const now = new Date();
     if (date <= now) {
-      throw new ConflictException('No se puede reservar un servicio para una fecha pasada');
+      throw new ConflictException(
+        'No se puede reservar un servicio para una fecha pasada',
+      );
     }
-  
+
     // Verificar disponibilidad (no permitir doble reserva en misma fecha)
     const existing = await this.bookingRepo.find({
       where: { service: { id: serviceId } },
     });
-  
+
     for (const b of existing) {
       if (b.date.getTime() === date.getTime()) {
         throw new ConflictException(
@@ -56,18 +61,18 @@ clientId: number, serviceId: number, date: Date, bookedMinutes: number,
         );
       }
     }
-  
+
     const booking = this.bookingRepo.create({
       client,
       service,
       date,
       bookingDate: now,
+      bookedMinutes,
       state: BookingState.PENDING,
     });
-  
+
     return this.bookingRepo.save(booking);
   }
-  
 
   async updateBookingStatus(
     bookingId: number,

@@ -53,17 +53,17 @@ describe('BookingsService', () => {
   describe('createBooking', () => {
     it('should throw if client not found', async () => {
       userRepo.findOne.mockResolvedValue(null);
-      await expect(service.createBooking(1, 1, new Date(), 120), ).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.createBooking(1, 1, new Date(), 120),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw if service not found', async () => {
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
       serviceRepo.findOne.mockResolvedValue(null);
-      await expect(service.createBooking(1, 2, new Date(), 120)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.createBooking(1, 2, new Date(), 120),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw if date is already booked', async () => {
@@ -72,15 +72,13 @@ describe('BookingsService', () => {
 
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
       serviceRepo.findOne.mockResolvedValue({
-      id: 2,
-      photographer: {},
+        id: 2,
+        photographer: {},
       } as Service);
-      bookingRepo.find.mockResolvedValue([
-      { date: futureDate } as Booking,
-      ]);
+      bookingRepo.find.mockResolvedValue([{ date: futureDate } as Booking]);
 
       await expect(
-      service.createBooking(1, 2, futureDate, 120),
+        service.createBooking(1, 2, futureDate, 120),
       ).rejects.toThrow(ConflictException);
     });
 
@@ -90,19 +88,21 @@ describe('BookingsService', () => {
 
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
       serviceRepo.findOne.mockResolvedValue({
-      id: 2,
-      photographer: {},
+        id: 2,
+        photographer: {},
       } as Service);
 
-      await expect(
-      service.createBooking(1, 2, pastDate, 120),
-      ).rejects.toThrow(ConflictException);
+      await expect(service.createBooking(1, 2, pastDate, 120)).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('should create and save a new booking', async () => {
       const mockNow = new Date('2026-05-01T10:00:00Z');
-      jest.spyOn(global.Date, 'now').mockImplementation(() => mockNow.getTime());
-    
+      jest
+        .spyOn(global.Date, 'now')
+        .mockImplementation(() => mockNow.getTime());
+
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
       serviceRepo.findOne.mockResolvedValue({
         id: 2,
@@ -112,10 +112,15 @@ describe('BookingsService', () => {
       const newBooking = { id: 99 } as Booking;
       bookingRepo.create.mockReturnValue(newBooking);
       bookingRepo.save.mockResolvedValue(newBooking);
-    
-      const result = await service.createBooking(1, 2, new Date('2026-05-02T10:00:00Z'), 120);
+
+      const result = await service.createBooking(
+        1,
+        2,
+        new Date('2026-05-02T10:00:00Z'),
+        120,
+      );
       expect(result).toEqual(newBooking);
-    
+
       jest.restoreAllMocks(); // Restore original Date behavior
     });
   });

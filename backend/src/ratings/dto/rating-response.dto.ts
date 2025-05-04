@@ -7,7 +7,10 @@ export class RatingResponseDto {
   @ApiProperty({ example: 5, description: 'ID del servicio calificado' })
   serviceId: number;
 
-  @ApiProperty({ example: 12, description: 'ID del cliente que realizó la calificación' })
+  @ApiProperty({
+    example: 12,
+    description: 'ID del cliente que realizó la calificación',
+  })
   clientId: number;
 
   @ApiProperty({ example: 4, description: 'Valor de la calificación (1 a 5)' })

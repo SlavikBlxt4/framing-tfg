@@ -23,7 +23,9 @@ export class Service {
   name: string;
 
   @Column({ nullable: true })
-  @ApiPropertyOptional({ example: 'Fotos profesionales en estudio con fondo blanco' })
+  @ApiPropertyOptional({
+    example: 'Fotos profesionales en estudio con fondo blanco',
+  })
   description: string;
 
   @Column({ type: 'float' })
@@ -34,12 +36,17 @@ export class Service {
   @ApiPropertyOptional({ example: 'https://example.com/foto.jpg' })
   imageUrl: string;
 
-
   @Column({ type: 'int', name: 'minimum_minutes', nullable: false })
   @ApiProperty({ example: 2, description: 'Horas mínimas contratables' })
   minimum_minutes: number;
 
-  @Column({ type: 'numeric', name: 'discount', precision: 5, scale: 2, nullable: true })
+  @Column({
+    type: 'numeric',
+    name: 'discount',
+    precision: 5,
+    scale: 2,
+    nullable: true,
+  })
   @ApiPropertyOptional({ example: 10.0, description: 'Descuento aplicado (%)' })
   discount?: number;
 

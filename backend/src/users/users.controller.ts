@@ -10,7 +10,13 @@ import {
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { Request } from 'express';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -27,7 +33,11 @@ export class UsersController {
   @Post('signup')
   @ApiOperation({ summary: 'Registrar nuevo usuario' })
   @ApiBody({ type: SignupDto })
-  @ApiResponse({ status: 201, description: 'Usuario registrado', type: UserResponseDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Usuario registrado',
+    type: UserResponseDto,
+  })
   async signup(@Body() body: SignupDto): Promise<UserResponseDto> {
     return this.usersService.signup(
       body.name,
@@ -41,7 +51,11 @@ export class UsersController {
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión de usuario' })
   @ApiBody({ type: LoginDto })
-  @ApiResponse({ status: 200, description: 'JWT devuelto', type: TokenResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'JWT devuelto',
+    type: TokenResponseDto,
+  })
   async login(@Body() body: LoginDto): Promise<string> {
     return this.usersService.login(body.email, body.password);
   }
@@ -50,16 +64,23 @@ export class UsersController {
   @Get('services')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Ver servicios del fotógrafo autenticado' })
-  @ApiResponse({ status: 200, description: 'Servicios encontrados', type: [ServiceResponseDto] })
+  @ApiResponse({
+    status: 200,
+    description: 'Servicios encontrados',
+    type: [ServiceResponseDto],
+  })
   async getMyServices(@Req() req: Request): Promise<ServiceResponseDto[]> {
     const userId = req.user['userId'];
     const role = req.user['role'];
 
     if (role !== UserRole.PHOTOGRAPHER) {
-      throw new ForbiddenException('Solo los fotógrafos pueden ver sus servicios.');
+      throw new ForbiddenException(
+        'Solo los fotógrafos pueden ver sus servicios.',
+      );
     }
 
-    const services = await this.usersService.getServicesByPhotographerId(userId);
+    const services =
+      await this.usersService.getServicesByPhotographerId(userId);
     return services.map((s) => ({
       id: s.id,
       name: s.name,

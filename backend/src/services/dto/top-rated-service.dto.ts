@@ -13,4 +13,3 @@ export class TopRatedServiceDto {
   @ApiProperty({ example: 4.8 })
   averageRating: number;
 }
-  

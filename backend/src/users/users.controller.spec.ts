@@ -68,10 +68,7 @@ describe('UsersController', () => {
       usersService.login.mockResolvedValue('fake-token');
 
       const result = await controller.login(dto);
-      expect(usersService.login).toHaveBeenCalledWith(
-        dto.email,
-        dto.password,
-      );
+      expect(usersService.login).toHaveBeenCalledWith(dto.email, dto.password);
       expect(result).toBe('fake-token');
     });
   });

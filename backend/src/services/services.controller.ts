@@ -43,7 +43,11 @@ export class ServicesController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Crear un nuevo servicio fotográfico' })
   @ApiBody({ type: CreateServiceDto })
-  @ApiResponse({ status: 200, description: 'Servicio creado con éxito', type: ServiceResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Servicio creado con éxito',
+    type: ServiceResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Estilo (categoría) no encontrado' })
   async createService(
     @Body() dto: CreateServiceDto,
@@ -66,7 +70,10 @@ export class ServicesController {
       dto.categoryId = category.id;
     }
 
-    const service = await this.servicesService.createService(dto, photographerId);
+    const service = await this.servicesService.createService(
+      dto,
+      photographerId,
+    );
 
     const responseDto: ServiceResponseDto = {
       id: service.id,
@@ -99,7 +106,10 @@ export class ServicesController {
   @ApiOperation({ summary: 'Eliminar un servicio del fotógrafo autenticado' })
   @ApiParam({ name: 'serviceId', type: Number })
   @ApiResponse({ status: 200, description: 'Servicio eliminado correctamente' })
-  @ApiResponse({ status: 403, description: 'No autorizado para eliminar este servicio' })
+  @ApiResponse({
+    status: 403,
+    description: 'No autorizado para eliminar este servicio',
+  })
   async deleteService(
     @Param('serviceId') serviceId: number,
     @Req() req: Request,
@@ -107,18 +117,29 @@ export class ServicesController {
   ) {
     const photographerId = req.user['userId'];
 
-    const deleted = await this.servicesService.deleteService(serviceId, photographerId);
+    const deleted = await this.servicesService.deleteService(
+      serviceId,
+      photographerId,
+    );
     if (deleted) {
-      return res.status(HttpStatus.OK).json({ message: 'Service deleted successfully' });
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: 'Service deleted successfully' });
     } else {
-      return res.status(HttpStatus.FORBIDDEN).json({ message: 'Unauthorized to delete this service' });
+      return res
+        .status(HttpStatus.FORBIDDEN)
+        .json({ message: 'Unauthorized to delete this service' });
     }
   }
 
   @Get(':categoryName')
   @ApiOperation({ summary: 'Obtener servicios por nombre de categoría' })
   @ApiParam({ name: 'categoryName', type: String })
-  @ApiResponse({ status: 200, description: 'Servicios encontrados', type: [ServiceResponseDto] })
+  @ApiResponse({
+    status: 200,
+    description: 'Servicios encontrados',
+    type: [ServiceResponseDto],
+  })
   async findByCategory(
     @Param('categoryName') categoryName: string,
   ): Promise<ServiceResponseDto[]> {

@@ -41,7 +41,11 @@ export class BookingsController {
   @Post('create')
   @ApiOperation({ summary: 'Crear una nueva reserva' })
   @ApiBody({ type: CreateBookingDto })
-  @ApiResponse({ status: 200, description: 'Reserva creada', type: BookingResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Reserva creada',
+    type: BookingResponseDto,
+  })
   async createBooking(
     @Body() dto: CreateBookingDto,
     @Req() req: Request,
@@ -76,7 +80,11 @@ export class BookingsController {
   @Post(':id/confirm')
   @ApiOperation({ summary: 'Confirmar una reserva' })
   @ApiParam({ name: 'id', type: Number, description: 'ID de la reserva' })
-  @ApiResponse({ status: 200, description: 'Reserva confirmada', type: BookingResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Reserva confirmada',
+    type: BookingResponseDto,
+  })
   async confirmBooking(
     @Param('id') bookingId: number,
     @Req() req: Request,
@@ -107,7 +115,11 @@ export class BookingsController {
   @Post(':id/cancel')
   @ApiOperation({ summary: 'Cancelar una reserva' })
   @ApiParam({ name: 'id', type: Number, description: 'ID de la reserva' })
-  @ApiResponse({ status: 200, description: 'Reserva cancelada', type: BookingResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Reserva cancelada',
+    type: BookingResponseDto,
+  })
   async cancelBooking(
     @Param('id') bookingId: number,
     @Req() req: Request,
@@ -136,7 +148,9 @@ export class BookingsController {
   }
 
   @Get('history')
-  @ApiOperation({ summary: 'Ver historial de reservas del cliente autenticado' })
+  @ApiOperation({
+    summary: 'Ver historial de reservas del cliente autenticado',
+  })
   @ApiResponse({ status: 200, type: [BookingHistoryDto] })
   async getClientHistory(@Req() req: Request): Promise<BookingHistoryDto[]> {
     const clientId = req.user['userId'];
@@ -144,7 +158,9 @@ export class BookingsController {
   }
 
   @Get('services-to-rate')
-  @ApiOperation({ summary: 'Obtener servicios del cliente pendientes de valorar' })
+  @ApiOperation({
+    summary: 'Obtener servicios del cliente pendientes de valorar',
+  })
   @ApiResponse({ status: 200, type: [ServiceToRateDto] })
   async getServicesToRate(@Req() req: Request): Promise<ServiceToRateDto[]> {
     const clientId = req.user['userId'];
@@ -152,7 +168,9 @@ export class BookingsController {
   }
 
   @Get('pending-bookings-photographer')
-  @ApiOperation({ summary: 'Ver reservas pendientes del fotógrafo autenticado' })
+  @ApiOperation({
+    summary: 'Ver reservas pendientes del fotógrafo autenticado',
+  })
   @ApiResponse({ status: 200, type: [BookingInfoDto] })
   async getPendingPhotographer(@Req() req: Request): Promise<BookingInfoDto[]> {
     const photographerId = req.user['userId'];
