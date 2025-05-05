@@ -147,14 +147,14 @@ describe('BookingsController', () => {
   });
 
   it('should return pending bookings for photographer', async () => {
-    const req: any = { user: { userId: 7 } };
+    const req: any = { user: { userId: 7, role: 'PHOTOGRAPHER' } }; // <- añadimos el rol
     const result = await controller.getPendingPhotographer(req);
     expect(bookingService.findPendingByPhotographer).toHaveBeenCalledWith(7);
     expect(result).toEqual([]);
   });
 
   it('should return pending bookings for client', async () => {
-    const req: any = { user: { userId: 8 } };
+    const req: any = { user: { userId: 8, role: 'CLIENT' } }; // <- añadimos el rol
     const result = await controller.getPendingClient(req);
     expect(bookingService.findPendingByClient).toHaveBeenCalledWith(8);
     expect(result).toEqual([]);

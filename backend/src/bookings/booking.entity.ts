@@ -34,7 +34,7 @@ export class Booking {
   @Column({ name: 'url_images', nullable: true })
   urlImages: string;
 
-  @Column({ type: 'double precision', nullable: true })
+  @Column({ type: 'numeric', precision: 10, scale: 2 })
   price: number;
 
   @Column({ name: 'booked_minutes', type: 'integer', nullable: true })

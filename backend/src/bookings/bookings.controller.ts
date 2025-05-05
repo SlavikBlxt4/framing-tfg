@@ -8,6 +8,7 @@ import {
   UseGuards,
   Res,
   HttpStatus,
+  ForbiddenException,
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
@@ -168,20 +169,38 @@ export class BookingsController {
   }
 
   @Get('pending-bookings-photographer')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Ver reservas pendientes del fotógrafo autenticado',
   })
   @ApiResponse({ status: 200, type: [BookingInfoDto] })
+  @ApiResponse({ status: 403, description: 'Solo fotógrafos pueden acceder' })
   async getPendingPhotographer(@Req() req: Request): Promise<BookingInfoDto[]> {
-    const photographerId = req.user['userId'];
-    return this.bookingService.findPendingByPhotographer(photographerId);
+    const user = req.user;
+    if (user['role'] !== 'PHOTOGRAPHER') {
+      throw new ForbiddenException(
+        'Solo los fotógrafos pueden acceder a esta ruta',
+      );
+    }
+
+    return this.bookingService.findPendingByPhotographer(user['userId']);
   }
 
   @Get('pending-bookings-client')
-  @ApiOperation({ summary: 'Ver reservas pendientes del cliente autenticado' })
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Ver reservas pendientes del cliente autenticado',
+  })
   @ApiResponse({ status: 200, type: [BookingInfoDto] })
+  @ApiResponse({ status: 403, description: 'Solo clientes pueden acceder' })
   async getPendingClient(@Req() req: Request): Promise<BookingInfoDto[]> {
-    const clientId = req.user['userId'];
-    return this.bookingService.findPendingByClient(clientId);
+    const user = req.user;
+    if (user['role'] !== 'CLIENT') {
+      throw new ForbiddenException(
+        'Solo los clientes pueden acceder a esta ruta',
+      );
+    }
+
+    return this.bookingService.findPendingByClient(user['userId']);
   }
 }
