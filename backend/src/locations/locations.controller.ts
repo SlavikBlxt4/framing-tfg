@@ -17,8 +17,7 @@ export class LocationsController {
     description: 'Lista de ubicaciones con coordenadas',
     type: [Location],
   })
-
-    async getAllLocations(): Promise<LocationResponseDto[]> {
-        return this.locationsService.getAllLocations();
-    }
+  async getAllLocations(): Promise<LocationResponseDto[]> {
+    return this.locationsService.getAllLocations();
+  }
 }

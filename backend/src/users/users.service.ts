@@ -106,16 +106,16 @@ export class UsersService {
   //     },
   //     relations: ['services', 'services.category', 'services.ratings'],
   //   });
-  
+
   //   return photographers.map((user) => {
   //     const service = user.services[0]; // Usamos el primero como "principal"
-  
+
   //     const ratings = service?.ratings ?? [];
   //     const avg =
   //       ratings.length > 0
   //         ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
   //         : 0;
-  
+
   //     return {
   //       id: String(user.id),
   //       nombreEstudio: service?.name ?? user.name,
@@ -129,5 +129,4 @@ export class UsersService {
   //     };
   //   });
   // }
-  
 }

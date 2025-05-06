@@ -17,8 +17,7 @@ export class PhotographerCardResponseDto {
     example:
       'https://cdn.cosmos.so/5e19d5e8-8eed-4a9c-adf9-80a26c276fd0?format=jpeg',
   })
-//   fotoPortada: string; implementaremos portada mas adelante
-
+  //   fotoPortada: string; implementaremos portada mas adelante
   @ApiProperty({ example: 4.8 })
   puntuacion: number;
 

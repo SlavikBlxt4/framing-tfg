@@ -67,7 +67,9 @@ export class RatingsService {
     };
   }
 
-  async getFormattedRatings(serviceId: number): Promise<RatingUserResponseDto[]> {
+  async getFormattedRatings(
+    serviceId: number,
+  ): Promise<RatingUserResponseDto[]> {
     const ratings = await this.ratingRepo.find({
       where: { service: { id: serviceId } },
       relations: ['client'],

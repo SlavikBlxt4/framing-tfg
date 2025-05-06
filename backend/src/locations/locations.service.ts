@@ -12,13 +12,14 @@ export class LocationsService {
     private readonly locationRepo: Repository<Location>,
   ) {}
   async getAllLocations(): Promise<LocationResponseDto[]> {
-    const locations = await this.locationRepo.find({ relations: ['photographer'] });
-  
+    const locations = await this.locationRepo.find({
+      relations: ['photographer'],
+    });
+
     return locations.map((loc) => ({
       id: loc.id,
       photographerId: loc.photographer.id,
       coordinates: loc.coordinates,
     }));
   }
-  
 }
