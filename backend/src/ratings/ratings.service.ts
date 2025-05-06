@@ -11,6 +11,8 @@ import { RatingResponseDto } from './dto/rating-response.dto';
 import { User } from '../users/user.entity';
 import { Service } from '../services/service.entity';
 
+import { RatingUserResponseDto } from './dto/rating-user-response.dto';
+
 @Injectable()
 export class RatingsService {
   constructor(
@@ -63,5 +65,23 @@ export class RatingsService {
       rating: saved.rating,
       comment: saved.comment,
     };
+  }
+
+  async getFormattedRatings(serviceId: number): Promise<RatingUserResponseDto[]> {
+    const ratings = await this.ratingRepo.find({
+      where: { service: { id: serviceId } },
+      relations: ['client'],
+      order: { createdAt: 'DESC' },
+    });
+
+    return ratings.map((r) => ({
+      nombre: r.client.name || 'Usuario',
+      fecha: r.createdAt.toLocaleDateString('es-ES'),
+      puntuacion: r.rating,
+      comentario: r.comment ?? '',
+      avatarUrl:
+        r.client.url_profile_image ??
+        'https://cdn.cosmos.so/default-avatar.jpg',
+    }));
   }
 }

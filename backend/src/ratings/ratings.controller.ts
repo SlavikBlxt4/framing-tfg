@@ -6,10 +6,14 @@ import {
   UseGuards,
   Res,
   HttpStatus,
+  Get,
+  Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { RatingsService } from './ratings.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { RatingResponseDto } from './dto/rating-response.dto';
+import { RatingUserResponseDto } from './dto/rating-user-response.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { Request, Response } from 'express';
 import {
@@ -18,6 +22,7 @@ import {
   ApiOperation,
   ApiBody,
   ApiResponse,
+  ApiParam,
 } from '@nestjs/swagger';
 
 @ApiTags('ratings')
@@ -53,5 +58,17 @@ export class RatingsController {
     );
 
     return res.status(HttpStatus.OK).json(result);
+  }
+
+  @Get(':serviceId')
+  @ApiOperation({ summary: 'Obtener calificaciones de un servicio' })
+  @ApiParam({ name: 'serviceId', type: Number, example: 5 })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de calificaciones del servicio',
+    type: [RatingUserResponseDto],
+  })
+  async getRatings(@Param('serviceId', ParseIntPipe) serviceId: number) {
+    return this.ratingsService.getFormattedRatings(serviceId);
   }
 }
