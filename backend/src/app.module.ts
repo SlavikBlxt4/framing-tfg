@@ -8,6 +8,7 @@ import { ServicesModule } from './services/services.module';
 import { CategoriesModule } from './categories/categories.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { RatingsModule } from './ratings/ratings.module';
+import { LocationsModule } from './locations/locations.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RatingsModule } from './ratings/ratings.module';
     CategoriesModule,
     BookingsModule,
     RatingsModule,
+    LocationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

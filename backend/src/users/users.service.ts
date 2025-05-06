@@ -9,6 +9,7 @@ import { User, UserRole } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Service } from '../services/service.entity'; // entidad de servicios
+import { PhotographerCardResponseDto } from './dto/photographer-card-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -94,4 +95,39 @@ export class UsersService {
         LIMIT 10;
       `);
   }
+
+  // async getPhotographersByCategory(categoryId: number): Promise<PhotographerCardResponseDto[]> {
+  //   const photographers = await this.userRepo.find({
+  //     where: {
+  //       role: UserRole.PHOTOGRAPHER,
+  //       services: {
+  //         category: { id: categoryId },
+  //       },
+  //     },
+  //     relations: ['services', 'services.category', 'services.ratings'],
+  //   });
+  
+  //   return photographers.map((user) => {
+  //     const service = user.services[0]; // Usamos el primero como "principal"
+  
+  //     const ratings = service?.ratings ?? [];
+  //     const avg =
+  //       ratings.length > 0
+  //         ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
+  //         : 0;
+  
+  //     return {
+  //       id: String(user.id),
+  //       nombreEstudio: service?.name ?? user.name,
+  //       fotografiaUrl: user.url_profile_image ?? '',
+  //       // fotoPortada: service?.coverPhotoUrl ?? '', //implementaremos portada mas adelante
+  //       puntuacion: parseFloat(avg.toFixed(1)),
+  //       categoriaId: service?.category?.id ?? null,
+  //       direccion: user?.location ?? '',
+  //       seguidores: user.followersCount ?? 0,
+  //       verificado: user.isVerified ?? false,
+  //     };
+  //   });
+  // }
+  
 }
