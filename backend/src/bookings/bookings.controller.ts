@@ -208,7 +208,23 @@ export class BookingsController {
 
   // METODO PARA CALCULAR LAS HORAS DISPONIBLES PARA UNA RESERVA DE UN FOTOGRAFO (miramos su horario, lo dividimos segun el tiempo del servicio a reservar, y restamos las horas ocupadas en esa fecha; devolvemos las horas disponibles)
   @Post('check-availability')
-  @ApiOperation({ summary: 'Consultar disponibilidad de un fotógrafo para un día específico' })
+  @ApiOperation({ summary: 'Consultar disponibilidad de un fotógrafo para un día específico', 
+    description: `Consulta las franjas horarias libres para un fotógrafo en una fecha concreta.
+  
+    Ejemplo con el fotógrafo ID 31:
+    - Horario disponible los lunes:
+      • 08:00 - 12:45
+      • 16:00 - 18:15
+    
+    - Reservas actuales el 2025-05-12:
+      • 08:45 - 09:00 (15 min)
+      • 09:30 - 09:45 (15 min)
+      • 16:30 - 17:30 (60 min)
+    
+    Si se consulta con duración de 60 minutos, la respuesta será:
+    ["10:00", "11:00"]
+    `,
+    })
   @ApiBody({ type: CheckAvailabilityDto })
   @ApiResponse({
     status: 200,
