@@ -194,7 +194,6 @@ export class BookingsService {
   // METODO PARA CALCULAR LAS HORAS DISPONIBLES PARA UNA RESERVA DE UN FOTOGRAFO (miramos su horario, lo dividimos segun el tiempo del servicio a reservar, y restamos las horas ocupadas en esa fecha; devolvemos las horas disponibles)
   async checkAvailability(dto: CheckAvailabilityDto): Promise<string[]> {
     const { photographerId, date, duration } = dto;
-    const targetDate = dayjs(date).startOf('day');
     const now = dayjs();
   
     const dayOfWeek = new Date(date).getDay(); // 0=domingo... 6=sábado

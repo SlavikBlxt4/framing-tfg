@@ -9,7 +9,6 @@ import { User, UserRole } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Service } from '../services/service.entity'; // entidad de servicios
-import { PhotographerCardResponseDto } from './dto/photographer-card-response.dto';
 
 @Injectable()
 export class UsersService {
