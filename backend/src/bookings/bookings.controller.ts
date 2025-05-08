@@ -20,6 +20,7 @@ import { BookingInfoDto } from './dto/booking-info.dto';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { ServicesService } from '../services/services.service';
 import { BookingResponseDto } from './dto/booking-response.dto';
+import { CheckAvailabilityDto } from './dto/check-availability.dto';
 import {
   ApiBearerAuth,
   ApiTags,
@@ -203,4 +204,28 @@ export class BookingsController {
 
     return this.bookingService.findPendingByClient(user['userId']);
   }
+
+
+  // METODO PARA CALCULAR LAS HORAS DISPONIBLES PARA UNA RESERVA DE UN FOTOGRAFO (miramos su horario, lo dividimos segun el tiempo del servicio a reservar, y restamos las horas ocupadas en esa fecha; devolvemos las horas disponibles)
+  @Post('check-availability')
+  @ApiOperation({ summary: 'Consultar disponibilidad de un fotógrafo para un día específico' })
+  @ApiBody({ type: CheckAvailabilityDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Array de horas disponibles',
+    schema: {
+      example: {
+        availableSlots: ['10:00', '11:00'],
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
+  async checkAvailability(
+    @Body() dto: CheckAvailabilityDto,
+    @Res() res: Response
+  ) {
+    const availableSlots = await this.bookingService.checkAvailability(dto);
+    return res.status(HttpStatus.OK).json({ availableSlots });
+  }
+
 }

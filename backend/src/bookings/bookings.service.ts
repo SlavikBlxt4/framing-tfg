@@ -13,6 +13,14 @@ import { Service } from '../services/service.entity';
 import { BookingHistoryDto } from './dto/booking-history.dto';
 import { BookingInfoDto } from './dto/booking-info.dto';
 import { ServiceToRateDto } from './dto/service-to-rate.dto';
+import { CheckAvailabilityDto } from './dto/check-availability.dto';
+import * as dayjs from 'dayjs';
+import * as utc from 'dayjs/plugin/utc';
+import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+dayjs.extend(utc);
+dayjs.extend(isSameOrBefore);
+
+
 
 @Injectable()
 export class BookingsService {
@@ -182,4 +190,105 @@ export class BookingsService {
       [clientId],
     );
   }
+
+  // METODO PARA CALCULAR LAS HORAS DISPONIBLES PARA UNA RESERVA DE UN FOTOGRAFO (miramos su horario, lo dividimos segun el tiempo del servicio a reservar, y restamos las horas ocupadas en esa fecha; devolvemos las horas disponibles)
+  async checkAvailability(dto: CheckAvailabilityDto): Promise<string[]> {
+    const { photographerId, date, duration } = dto;
+    const targetDate = dayjs(date).startOf('day');
+    const now = dayjs();
+  
+    const dayOfWeek = new Date(date).getDay(); // 0=domingo... 6=sábado
+    const weekDayId = dayOfWeek === 0 ? 7 : dayOfWeek;
+  
+    const availability = await this.bookingRepo.query(
+      `
+      SELECT s.starting_hour, s.ending_hour
+      FROM photographer_availability pa
+      JOIN schedule s ON pa.schedule_id = s.id
+      WHERE pa.photographer_id = $1 AND pa.day_id = $2
+      `,
+      [photographerId, weekDayId]
+    );
+  
+    const possibleSlots: string[] = [];
+  
+    for (const slot of availability) {
+      const start = dayjs(`${date}T${slot.starting_hour}`);
+      const end = dayjs(`${date}T${slot.ending_hour}`);
+  
+      let current = start;
+  
+      while (current.add(duration, 'minute').isSameOrBefore(end)) {
+        if (current.isAfter(now)) {
+          possibleSlots.push(current.format('HH:mm'));
+        }
+        current = current.add(duration, 'minute');
+      }
+    }
+  
+    const bookings = await this.getPhotographerBookingsForDay(photographerId, date);
+  
+    const slotObjects = possibleSlots.map(timeStr => {
+      const start = dayjs(`${date}T${timeStr}`);
+      const end = start.add(duration, 'minute');
+      return { time: timeStr, start, end };
+    });
+  
+    const availableSlots = slotObjects.filter(slot => {
+      for (const booking of bookings) {
+        const overlaps =
+          slot.start.isBefore(booking.end) && slot.end.isAfter(booking.start);
+  
+        if (overlaps) {
+          console.log(`❌ Slot ${slot.time} (${slot.start.format('HH:mm')} - ${slot.end.format('HH:mm')}) choca con reserva: ${booking.start.format('HH:mm')} - ${booking.end.format('HH:mm')}`);
+          return false;
+        } else {
+          console.log(`✅ Slot ${slot.time} (${slot.start.format('HH:mm')} - ${slot.end.format('HH:mm')}) NO choca con reserva: ${booking.start.format('HH:mm')} - ${booking.end.format('HH:mm')}`);
+        }
+      }
+      return true;
+    });
+  
+    return availableSlots.map(slot => slot.time);
+  }
+  
+
+
+  // Pedimos a la bbdd los bookings pendientes del fotógrafo para un dia en concreto
+  private async getPhotographerBookingsForDay(
+    photographerId: number,
+    date: string
+  ): Promise<{ start: dayjs.Dayjs; end: dayjs.Dayjs }[]> {
+    const startOfDay = dayjs(date).startOf('day');
+    const endOfDay = dayjs(date).endOf('day');
+  
+    const rawBookings = await this.bookingRepo
+      .createQueryBuilder('b')
+      .leftJoin('b.service', 's')
+      .where('s.photographer_id = :photographerId', { photographerId })
+      .andWhere('b.state = :state', { state: BookingState.PENDING })
+      .andWhere('b.date BETWEEN :start AND :end', {
+        start: startOfDay.toISOString(),
+        end: endOfDay.toISOString(),
+      })
+      .select(['b.date AS date', 'b.booked_minutes AS booked_minutes'])
+      .getRawMany();
+  
+    console.log('📦 Bookings encontrados:');
+    for (const b of rawBookings) {
+      console.log(`  - Fecha: ${b.date}, Duración: ${b.booked_minutes}`);
+      if (!b.booked_minutes) {
+        console.warn('⚠️ Reserva sin duración válida:', b);
+      }
+    }
+  
+    return rawBookings.map(b => {
+      const start = dayjs(b.date);
+      const end = start.add(b.booked_minutes, 'minute');
+      return { start, end };
+    });
+  }
+  
+  
+
 }
