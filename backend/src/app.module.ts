@@ -9,6 +9,8 @@ import { CategoriesModule } from './categories/categories.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { RatingsModule } from './ratings/ratings.module';
 import { LocationsModule } from './locations/locations.module';
+import { PhotographerAvailabilityModule } from './photographer_availability/photographer_availability.module';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { LocationsModule } from './locations/locations.module';
     BookingsModule,
     RatingsModule,
     LocationsModule,
+    PhotographerAvailabilityModule,
+    ScheduleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
