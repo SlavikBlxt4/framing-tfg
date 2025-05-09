@@ -18,6 +18,7 @@ import { Service } from 'src/services/service.entity';
 import { Booking } from 'src/bookings/booking.entity';
 import { Rating } from 'src/ratings/rating.entity';
 import { Location } from 'src/locations/location.entity'; // ajusta la ruta según tu estructura
+import { PhotographerAvailability } from 'src/photographer_availability/entities/photographer_availability.entity';
 
 
 export enum UserRole {
@@ -88,5 +89,9 @@ export class User {
 
   @OneToMany(() => Location, (location) => location.photographer)
   locations: Location[];
+
+  @OneToMany(() => PhotographerAvailability, (a) => a.photographer)
+  availability: PhotographerAvailability[];
+
 
 }

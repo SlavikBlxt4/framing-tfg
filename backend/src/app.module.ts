@@ -11,6 +11,7 @@ import { RatingsModule } from './ratings/ratings.module';
 import { LocationsModule } from './locations/locations.module';
 import { PhotographerAvailabilityModule } from './photographer_availability/photographer_availability.module';
 import { ScheduleModule } from './schedule/schedule.module';
+import { WeekDayModule } from './week-day/week-day.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ScheduleModule } from './schedule/schedule.module';
     LocationsModule,
     PhotographerAvailabilityModule,
     ScheduleModule,
+    WeekDayModule,
   ],
   controllers: [AppController],
   providers: [AppService],

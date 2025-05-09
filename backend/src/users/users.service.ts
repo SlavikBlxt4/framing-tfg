@@ -139,6 +139,10 @@ export class UsersService {
             ratings: true,
           },
           locations: true,
+          availability: {
+            day: true,
+            schedule: true,
+          },
         },
       });
 
@@ -146,6 +150,19 @@ export class UsersService {
         const allRatings = user.services.flatMap((s) => s.ratings ?? []);
         const sum = allRatings.reduce((acc, r) => acc + (r.rating || 0), 0);
         const average = allRatings.length > 0 ? sum / allRatings.length : 0;
+
+        const week = Array.from({ length: 7 }, (_, i) => ({
+            day: i + 1,
+            slots: [],
+          }));
+
+          user.availability?.forEach((slot) => {
+            const dayIndex = slot.day.id - 1;
+            week[dayIndex].slots.push({
+              start: slot.schedule.starting_hour,
+              end: slot.schedule.ending_hour,
+            });
+          });
 
         return {
           id: user.id,
@@ -161,6 +178,7 @@ export class UsersService {
           services: user.services,
           locations: user.locations,
           averageRating: parseFloat(average.toFixed(2)),
+          availability: week,
         };
 
       });
