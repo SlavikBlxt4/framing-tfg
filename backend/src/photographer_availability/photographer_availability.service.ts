@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePhotographerAvailabilityDto } from './dto/create-photographer_availability.dto';
-import { UpdatePhotographerAvailabilityDto } from './dto/update-photographer_availability.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PhotographerAvailability } from './entities/photographer_availability.entity';
