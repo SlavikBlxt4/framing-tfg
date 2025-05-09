@@ -9,8 +9,6 @@ import { User, UserRole } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Service } from '../services/service.entity'; // entidad de servicios
-import { PhotographerWithRatingDto } from './dto/photographer-with-rating.dto';
-import { Rating } from '../ratings/rating.entity'; // Asegúrate de que esta importación es válida
 import { PhotographerPublicDto } from './dto/photographer-public.dto';
 
 

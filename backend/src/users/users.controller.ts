@@ -24,7 +24,6 @@ import { ServiceResponseDto } from '../services/dto/service-response.dto';
 import { UserRole } from './user.entity';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { TopPhotographerDto } from './dto/top-photographer.dto';
-import { PhotographerWithRatingDto } from './dto/photographer-with-rating.dto';
 import { PhotographerPublicDto } from './dto/photographer-public.dto';
 
 
