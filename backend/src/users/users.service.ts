@@ -9,6 +9,10 @@ import { User, UserRole } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Service } from '../services/service.entity'; // entidad de servicios
+import { PhotographerWithRatingDto } from './dto/photographer-with-rating.dto';
+import { Rating } from '../ratings/rating.entity'; // Asegúrate de que esta importación es válida
+import { PhotographerPublicDto } from './dto/photographer-public.dto';
+
 
 @Injectable()
 export class UsersService {
@@ -128,4 +132,41 @@ export class UsersService {
   //     };
   //   });
   // }
+
+    async getAllPhotographers(): Promise<PhotographerPublicDto[]> {
+      const photographers = await this.userRepo.find({
+        where: { role: UserRole.PHOTOGRAPHER },
+        relations: {
+          services: {
+            ratings: true,
+          },
+          locations: true,
+        },
+      });
+
+      return photographers.map((user) => {
+        const allRatings = user.services.flatMap((s) => s.ratings ?? []);
+        const sum = allRatings.reduce((acc, r) => acc + (r.rating || 0), 0);
+        const average = allRatings.length > 0 ? sum / allRatings.length : 0;
+
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone_number: user.phone_number,
+          registry_date: user.registry_date,
+          active: user.active,
+          role: user.role,
+          description: user.description,
+          url_portfolio: user.url_portfolio,
+          url_profile_image: user.url_profile_image,
+          services: user.services,
+          locations: user.locations,
+          averageRating: parseFloat(average.toFixed(2)),
+        };
+
+      });
+    }
+
+
 }

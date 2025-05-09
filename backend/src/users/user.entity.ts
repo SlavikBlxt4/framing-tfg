@@ -16,6 +16,9 @@ import {
 } from 'class-validator';
 import { Service } from 'src/services/service.entity';
 import { Booking } from 'src/bookings/booking.entity';
+import { Rating } from 'src/ratings/rating.entity';
+import { Location } from 'src/locations/location.entity'; // ajusta la ruta según tu estructura
+
 
 export enum UserRole {
   CLIENT = 'CLIENT',
@@ -79,4 +82,11 @@ export class User {
 
   @OneToMany(() => Service, (service) => service.photographer)
   services: Service[];
+
+  @OneToMany(() => Rating, rating => rating.service)
+  ratings: Rating[];
+
+  @OneToMany(() => Location, (location) => location.photographer)
+  locations: Location[];
+
 }

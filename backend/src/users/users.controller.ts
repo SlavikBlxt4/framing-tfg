@@ -24,6 +24,9 @@ import { ServiceResponseDto } from '../services/dto/service-response.dto';
 import { UserRole } from './user.entity';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { TopPhotographerDto } from './dto/top-photographer.dto';
+import { PhotographerWithRatingDto } from './dto/photographer-with-rating.dto';
+import { PhotographerPublicDto } from './dto/photographer-public.dto';
+
 
 @ApiTags('users')
 @Controller('users')
@@ -98,4 +101,14 @@ export class UsersController {
   async getTop10Photographers() {
     return this.usersService.getTop10PhotographersByBookings();
   }
+
+
+  // PARA DEVOLVER TODA LA INFO DE TODOS LOS FOTÓGRAFOS
+  @Get('photographers')
+  @ApiOperation({ summary: 'Obtener todos los fotógrafos con su rating promedio' })
+  async getAllPhotographers(): Promise<PhotographerPublicDto[]> {
+    return this.usersService.getAllPhotographers();
+  }
+
+
 }
