@@ -1,10 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { PhotographerAvailabilityService } from './photographer_availability.service';
 import { CreatePhotographerAvailabilityDto } from './dto/create-photographer_availability.dto';
-import {
-  UseGuards,
-  Req,
-} from '@nestjs/common';
 import { JwtAuthGuard  } from '../auth/jwt/jwt-auth.guard'; // Asegúrate de ajustar el path
 import { Request } from 'express';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse, ApiBody  } from '@nestjs/swagger';

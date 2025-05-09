@@ -106,10 +106,6 @@ export class PhotographerAvailabilityService {
     return `This action returns a #${id} photographerAvailability`;
   }
 
-  update(id: number, updatePhotographerAvailabilityDto: UpdatePhotographerAvailabilityDto) {
-    return `This action updates a #${id} photographerAvailability`;
-  }
-
   remove(id: number) {
     return `This action removes a #${id} photographerAvailability`;
   }
