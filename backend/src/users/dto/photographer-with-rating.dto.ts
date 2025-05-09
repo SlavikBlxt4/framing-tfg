@@ -1,4 +1,4 @@
-// USAMOS ESTA PARA DEVOLVER TODA LA INFO DE LOS FOTÓGRAFOS 
+// USAMOS ESTA PARA DEVOLVER TODA LA INFO DE LOS FOTÓGRAFOS
 import { User } from '../user.entity';
 
 export class PhotographerWithRatingDto {

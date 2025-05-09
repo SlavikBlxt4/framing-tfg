@@ -1,7 +1,6 @@
 import { Controller, Get, Param, Delete } from '@nestjs/common';
 import { WeekDayService } from './week-day.service';
 
-
 @Controller('week-day')
 export class WeekDayController {
   constructor(private readonly weekDayService: WeekDayService) {}

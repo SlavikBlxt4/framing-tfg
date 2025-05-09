@@ -5,7 +5,9 @@ import {
   Get,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
@@ -13,6 +15,7 @@ import { Request } from 'express';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -26,11 +29,34 @@ import { TokenResponseDto } from './dto/token-response.dto';
 import { TopPhotographerDto } from './dto/top-photographer.dto';
 import { PhotographerPublicDto } from './dto/photographer-public.dto';
 
+import { S3Service } from 'src/s3/s3.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileUploadDto } from './dto/file-upload.dto';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly s3Service: S3Service,
+  ) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Post('upload-profile-image')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: FileUploadDto })
+  @ApiOperation({ summary: 'Sube una imagen de perfil para el usuario actual' })
+  async uploadProfileImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: any,
+  ) {
+    const userId = req.user.userId;
+    const imageUrl = await this.s3Service.uploadUserProfileImage(userId, file);
+    await this.usersService.updateProfileImage(userId, imageUrl);
+    return { imageUrl };
+  }
 
   @Post('signup')
   @ApiOperation({ summary: 'Registrar nuevo usuario' })
@@ -101,13 +127,12 @@ export class UsersController {
     return this.usersService.getTop10PhotographersByBookings();
   }
 
-
   // PARA DEVOLVER TODA LA INFO DE TODOS LOS FOTÓGRAFOS
   @Get('photographers')
-  @ApiOperation({ summary: 'Obtener todos los fotógrafos con su rating promedio' })
+  @ApiOperation({
+    summary: 'Obtener todos los fotógrafos con su rating promedio',
+  })
   async getAllPhotographers(): Promise<PhotographerPublicDto[]> {
     return this.usersService.getAllPhotographers();
   }
-
-
 }

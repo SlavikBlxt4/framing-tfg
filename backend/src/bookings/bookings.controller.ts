@@ -205,10 +205,10 @@ export class BookingsController {
     return this.bookingService.findPendingByClient(user['userId']);
   }
 
-
   // METODO PARA CALCULAR LAS HORAS DISPONIBLES PARA UNA RESERVA DE UN FOTOGRAFO (miramos su horario, lo dividimos segun el tiempo del servicio a reservar, y restamos las horas ocupadas en esa fecha; devolvemos las horas disponibles)
   @Post('check-availability')
-  @ApiOperation({ summary: 'Consultar disponibilidad de un fotógrafo para un día específico', 
+  @ApiOperation({
+    summary: 'Consultar disponibilidad de un fotógrafo para un día específico',
     description: `Consulta las franjas horarias libres para un fotógrafo en una fecha concreta.
   
     Ejemplo con el fotógrafo ID 31:
@@ -224,7 +224,7 @@ export class BookingsController {
     Si se consulta con duración de 60 minutos, la respuesta será:
     ["10:00", "11:00"]
     `,
-    })
+  })
   @ApiBody({ type: CheckAvailabilityDto })
   @ApiResponse({
     status: 200,
@@ -238,10 +238,9 @@ export class BookingsController {
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async checkAvailability(
     @Body() dto: CheckAvailabilityDto,
-    @Res() res: Response
+    @Res() res: Response,
   ) {
     const availableSlots = await this.bookingService.checkAvailability(dto);
     return res.status(HttpStatus.OK).json({ availableSlots });
   }
-
 }

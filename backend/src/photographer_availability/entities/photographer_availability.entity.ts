@@ -1,8 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Schedule } from '../../schedule/entities/schedule.entity';
 import { User } from '../../users/user.entity';
 import { WeekDay } from '../../week-day/entities/week-day.entity';
- 
 
 @Entity('photographer_availability')
 export class PhotographerAvailability {
@@ -29,6 +34,4 @@ export class PhotographerAvailability {
   @ManyToOne(() => WeekDay, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'day_id' })
   day: WeekDay;
-
-
 }

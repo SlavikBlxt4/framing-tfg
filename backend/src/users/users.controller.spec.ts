@@ -3,27 +3,33 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UserRole } from './user.entity';
 import { ForbiddenException } from '@nestjs/common';
+import { S3Service } from 'src/s3/s3.service';
 
 describe('UsersController', () => {
   let controller: UsersController;
   let usersService: jest.Mocked<UsersService>;
 
-  const mockUsersService = {
+  const mockUsersService: jest.Mocked<Partial<UsersService>> = {
     signup: jest.fn(),
     login: jest.fn(),
     findById: jest.fn(),
     getServicesByPhotographerId: jest.fn(),
     getTop10PhotographersByBookings: jest.fn(),
+    updateProfileImage: jest.fn(),
+  };
+
+  const mockS3Service: jest.Mocked<Partial<S3Service>> = {
+    uploadUserProfileImage: jest
+      .fn()
+      .mockResolvedValue('https://mocked-url.com/image.jpg'),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [
-        {
-          provide: UsersService,
-          useValue: mockUsersService,
-        },
+        { provide: UsersService, useValue: mockUsersService },
+        { provide: S3Service, useValue: mockS3Service },
       ],
     }).compile();
 
@@ -45,7 +51,7 @@ describe('UsersController', () => {
         role: UserRole.CLIENT,
       };
       const expectedUser = { id: 1, ...dto };
-      usersService.signup.mockResolvedValue(expectedUser as any);
+      usersService.signup!.mockResolvedValue(expectedUser as any);
 
       const result = await controller.signup(dto);
       expect(usersService.signup).toHaveBeenCalledWith(
@@ -65,7 +71,7 @@ describe('UsersController', () => {
         email: 'laura@example.com',
         password: 'abc123',
       };
-      usersService.login.mockResolvedValue('fake-token');
+      usersService.login!.mockResolvedValue('fake-token');
 
       const result = await controller.login(dto);
       expect(usersService.login).toHaveBeenCalledWith(dto.email, dto.password);
@@ -93,7 +99,7 @@ describe('UsersController', () => {
           category: { name: 'Retrato' },
         },
       ];
-      usersService.getServicesByPhotographerId.mockResolvedValue(
+      usersService.getServicesByPhotographerId!.mockResolvedValue(
         services as any,
       );
 
@@ -130,11 +136,42 @@ describe('UsersController', () => {
       const top = [
         { photographer_id: 1, photographer_name: 'Ana', booking_count: 12 },
       ];
-      usersService.getTop10PhotographersByBookings.mockResolvedValue(top);
+      usersService.getTop10PhotographersByBookings!.mockResolvedValue(top);
 
       const result = await controller.getTop10Photographers();
       expect(result).toEqual(top);
       expect(usersService.getTop10PhotographersByBookings).toHaveBeenCalled();
+    });
+  });
+
+  describe('uploadProfileImage', () => {
+    it('should upload the image and update user profile', async () => {
+      const file = {
+        originalname: 'photo.jpg',
+        buffer: Buffer.from('mocked'), // Ensure this is a valid Buffer
+        mimetype: 'image/jpeg',
+      } as any;
+
+      const req = {
+        user: { userId: 1 },
+      } as any;
+
+      mockS3Service.uploadUserProfileImage!.mockResolvedValue(
+        'https://mocked-url.com/image.jpg',
+      );
+      mockUsersService.updateProfileImage!.mockResolvedValue(undefined);
+
+      const result = await controller.uploadProfileImage(file, req);
+
+      expect(mockS3Service.uploadUserProfileImage).toHaveBeenCalledWith(
+        1,
+        file,
+      );
+      expect(mockUsersService.updateProfileImage).toHaveBeenCalledWith(
+        1,
+        'https://mocked-url.com/image.jpg',
+      );
+      expect(result).toEqual({ imageUrl: 'https://mocked-url.com/image.jpg' });
     });
   });
 });

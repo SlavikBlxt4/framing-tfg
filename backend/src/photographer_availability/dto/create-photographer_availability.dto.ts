@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, ValidateNested, IsString, Matches } from 'class-validator';
+import {
+  IsArray,
+  IsInt,
+  ValidateNested,
+  IsString,
+  Matches,
+} from 'class-validator';
 
 export class TimeSlotDto {
   @ApiProperty({ example: '08:00' })
@@ -15,7 +21,10 @@ export class TimeSlotDto {
 }
 
 export class CreatePhotographerAvailabilityDto {
-  @ApiProperty({ example: 2, description: 'Día de la semana (1=lunes ... 7=domingo)' })
+  @ApiProperty({
+    example: 2,
+    description: 'Día de la semana (1=lunes ... 7=domingo)',
+  })
   @IsInt()
   day: number;
 

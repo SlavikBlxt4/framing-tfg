@@ -4,7 +4,6 @@ import { ScheduleController } from './schedule.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Schedule } from './entities/schedule.entity';
 
-
 @Module({
   controllers: [ScheduleController],
   providers: [ScheduleService],

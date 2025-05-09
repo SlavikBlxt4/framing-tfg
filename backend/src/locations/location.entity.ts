@@ -1,15 +1,15 @@
 // src/locations/location.entity.ts
 import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    ManyToOne,
-    JoinColumn,
-  } from 'typeorm';
-  import { User } from '../users/user.entity';
-  import { ApiProperty } from '@nestjs/swagger';
-  
-  @Entity('locations')
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { User } from '../users/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
+
+@Entity('locations')
 export class Location {
   @PrimaryGeneratedColumn()
   id: number;
@@ -30,4 +30,3 @@ export class Location {
   })
   coordinates: object;
 }
-  

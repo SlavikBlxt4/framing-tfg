@@ -3,11 +3,14 @@ import { IsInt, IsDateString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CheckAvailabilityDto {
-  @ApiProperty({ example: 31, description: 'ID del fotógrafo' })  
+  @ApiProperty({ example: 31, description: 'ID del fotógrafo' })
   @IsInt()
   photographerId: number;
 
-  @ApiProperty({ example: '2025-05-12', description: 'Fecha de la reserva (YYYY-MM-DD)' })
+  @ApiProperty({
+    example: '2025-05-12',
+    description: 'Fecha de la reserva (YYYY-MM-DD)',
+  })
   @IsDateString()
   date: string; // Solo se espera la fecha (yyyy-mm-dd)
 

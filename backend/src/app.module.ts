@@ -12,6 +12,8 @@ import { LocationsModule } from './locations/locations.module';
 import { PhotographerAvailabilityModule } from './photographer_availability/photographer_availability.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { WeekDayModule } from './week-day/week-day.module';
+import { S3Service } from './s3/s3.service';
+import { S3Module } from './s3/s3.module';
 
 @Module({
   imports: [
@@ -23,11 +25,12 @@ import { WeekDayModule } from './week-day/week-day.module';
     BookingsModule,
     RatingsModule,
     LocationsModule,
+    S3Module,
     PhotographerAvailabilityModule,
     ScheduleModule,
     WeekDayModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, S3Service],
 })
 export class AppModule {}

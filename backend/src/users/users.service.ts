@@ -11,7 +11,6 @@ import { JwtService } from '@nestjs/jwt';
 import { Service } from '../services/service.entity'; // entidad de servicios
 import { PhotographerPublicDto } from './dto/photographer-public.dto';
 
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -58,6 +57,10 @@ export class UsersService {
     });
 
     return this.userRepo.save(newUser);
+  }
+
+  async updateProfileImage(userId: number, imageUrl: string): Promise<void> {
+    await this.userRepo.update(userId, { url_profile_image: imageUrl });
   }
 
   async login(email: string, password: string): Promise<string> {
@@ -131,58 +134,55 @@ export class UsersService {
   //   });
   // }
 
-    async getAllPhotographers(): Promise<PhotographerPublicDto[]> {
-      const photographers = await this.userRepo.find({
-        where: { role: UserRole.PHOTOGRAPHER },
-        relations: {
-          services: {
-            ratings: true,
-          },
-          locations: true,
-          availability: {
-            day: true,
-            schedule: true,
-          },
+  async getAllPhotographers(): Promise<PhotographerPublicDto[]> {
+    const photographers = await this.userRepo.find({
+      where: { role: UserRole.PHOTOGRAPHER },
+      relations: {
+        services: {
+          ratings: true,
         },
+        locations: true,
+        availability: {
+          day: true,
+          schedule: true,
+        },
+      },
+    });
+
+    return photographers.map((user) => {
+      const allRatings = user.services.flatMap((s) => s.ratings ?? []);
+      const sum = allRatings.reduce((acc, r) => acc + (r.rating || 0), 0);
+      const average = allRatings.length > 0 ? sum / allRatings.length : 0;
+
+      const week = Array.from({ length: 7 }, (_, i) => ({
+        day: i + 1,
+        slots: [],
+      }));
+
+      user.availability?.forEach((slot) => {
+        const dayIndex = slot.day.id - 1;
+        week[dayIndex].slots.push({
+          start: slot.schedule.starting_hour,
+          end: slot.schedule.ending_hour,
+        });
       });
 
-      return photographers.map((user) => {
-        const allRatings = user.services.flatMap((s) => s.ratings ?? []);
-        const sum = allRatings.reduce((acc, r) => acc + (r.rating || 0), 0);
-        const average = allRatings.length > 0 ? sum / allRatings.length : 0;
-
-        const week = Array.from({ length: 7 }, (_, i) => ({
-            day: i + 1,
-            slots: [],
-          }));
-
-          user.availability?.forEach((slot) => {
-            const dayIndex = slot.day.id - 1;
-            week[dayIndex].slots.push({
-              start: slot.schedule.starting_hour,
-              end: slot.schedule.ending_hour,
-            });
-          });
-
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          phone_number: user.phone_number,
-          registry_date: user.registry_date,
-          active: user.active,
-          role: user.role,
-          description: user.description,
-          url_portfolio: user.url_portfolio,
-          url_profile_image: user.url_profile_image,
-          services: user.services,
-          locations: user.locations,
-          averageRating: parseFloat(average.toFixed(2)),
-          availability: week,
-        };
-
-      });
-    }
-
-
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone_number: user.phone_number,
+        registry_date: user.registry_date,
+        active: user.active,
+        role: user.role,
+        description: user.description,
+        url_portfolio: user.url_portfolio,
+        url_profile_image: user.url_profile_image,
+        services: user.services,
+        locations: user.locations,
+        averageRating: parseFloat(average.toFixed(2)),
+        availability: week,
+      };
+    });
+  }
 }
