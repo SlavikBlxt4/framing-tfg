@@ -209,8 +209,12 @@ export class BookingsController {
   @Post('check-availability')
   @ApiOperation({
     summary: 'Consultar disponibilidad de un fotógrafo para un día específico',
-    description: `Consulta las franjas horarias libres para un fotógrafo en una fecha concreta.
-  
+    description: `Consulta las franjas horarias libres para un fotógrafo en una fecha concreta teniendo en cuenta:
+
+    - Su horario definido ese día (a través de la tabla de disponibilidad).
+    - La duración solicitada del servicio (en minutos).
+    - Las reservas que ya tenga ese fotógrafo en estado **'pending'** o **'active'**, las cuales se excluyen automáticamente.
+      
     Ejemplo con el fotógrafo ID 31:
     - Horario disponible los lunes:
       • 08:00 - 12:45

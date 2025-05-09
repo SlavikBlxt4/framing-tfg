@@ -256,7 +256,7 @@ export class BookingsService {
     return availableSlots.map((slot) => slot.time);
   }
 
-  // Pedimos a la bbdd los bookings pendientes del fotógrafo para un dia en concreto
+  // Pedimos a la bbdd los bookings pendientes y activas del fotógrafo para un dia en concreto
   private async getPhotographerBookingsForDay(
     photographerId: number,
     date: string,
@@ -268,7 +268,9 @@ export class BookingsService {
       .createQueryBuilder('b')
       .leftJoin('b.service', 's')
       .where('s.photographer_id = :photographerId', { photographerId })
-      .andWhere('b.state = :state', { state: BookingState.PENDING })
+      .andWhere('b.state IN (:...states)', {
+        states: [BookingState.PENDING, BookingState.ACTIVE],
+      })
       .andWhere('b.date BETWEEN :start AND :end', {
         start: startOfDay.toISOString(),
         end: endOfDay.toISOString(),
