@@ -7,7 +7,6 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ⬇️ Aquí añadimos el ValidationPipe
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true, // <- hace funcionar @Type de class-transformer
@@ -25,7 +24,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
