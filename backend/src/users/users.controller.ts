@@ -41,22 +41,28 @@ export class UsersController {
     private readonly s3Service: S3Service,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Post('upload-profile-image')
-  @UseInterceptors(FileInterceptor('file'))
-  @ApiBearerAuth()
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: FileUploadDto })
-  @ApiOperation({ summary: 'Sube una imagen de perfil para el usuario actual' })
-  async uploadProfileImage(
-    @UploadedFile() file: Express.Multer.File,
-    @Req() req: any,
-  ) {
-    const userId = req.user.userId;
-    const imageUrl = await this.s3Service.uploadUserProfileImage(userId, file);
-    await this.usersService.updateProfileImage(userId, imageUrl);
-    return { imageUrl };
+@UseGuards(JwtAuthGuard)
+@Post('upload-profile-image')
+@UseInterceptors(FileInterceptor('file'))
+@ApiBearerAuth()
+@ApiConsumes('multipart/form-data')
+@ApiBody({ type: FileUploadDto })
+@ApiOperation({ summary: 'Sube una imagen de perfil para el usuario CLIENTE' })
+async uploadProfileImage(
+  @UploadedFile() file: Express.Multer.File,
+  @Req() req: any,
+) {
+  const userId = req.user.userId;
+  const role = req.user.role;
+
+  if (role !== UserRole.CLIENT) {
+    throw new ForbiddenException('Solo los clientes pueden subir esta imagen de perfil.');
   }
+
+  const imageUrl = await this.s3Service.uploadUserProfileImage(userId, file);
+  await this.usersService.updateProfileImage(userId, imageUrl);
+  return { imageUrl };
+}
 
   @UseGuards(JwtAuthGuard)
   @Post('photographers/upload-profile-image')
@@ -115,6 +121,37 @@ export class UsersController {
     await this.usersService.updateCoverImage(userId, imageUrl);
     return { imageUrl };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('photographers/upload-portfolio-image')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: FileUploadDto })
+  @ApiOperation({ summary: 'Sube imagen al portfolio del fotógrafo' })
+  async uploadPortfolioImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: any,
+  ) {
+    const userId = req.user.userId;
+    const role = req.user.role;
+
+    if (role !== UserRole.PHOTOGRAPHER) {
+      throw new ForbiddenException('Solo los fotógrafos pueden subir al portfolio.');
+    }
+
+    const key = `photographers/${userId}/portfolio/portfolio_${Date.now()}_${file.originalname}`;
+    const imageUrl = await this.s3Service.uploadToPath(key, file) ;
+
+    // ✅ Aquí llamamos a guardar el URL base SOLO si no existe aún
+    const portfolioBaseUrl = this.s3Service.getPublicBaseUrl(key); // método nuevo sugerido abajo
+    await this.usersService.setPortfolioUrlIfMissing(userId, portfolioBaseUrl);
+
+    return { imageUrl };
+  }
+
+
+
 
   @Post('signup')
   @ApiOperation({ summary: 'Registrar nuevo usuario' })

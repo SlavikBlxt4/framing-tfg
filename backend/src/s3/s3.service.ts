@@ -24,6 +24,13 @@ export class S3Service {
     return `https://${process.env.AWS_S3_BUCKET_PHOTOGRAPHERS}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
   }
 
+  getPublicBaseUrl(fullKey: string): string {
+  const parts = fullKey.split('/');
+  const prefix = parts.slice(0, parts.length - 1).join('/') + '/';
+  return `https://${process.env.AWS_S3_BUCKET_PHOTOGRAPHERS}.s3.${process.env.AWS_REGION}.amazonaws.com/${prefix}`;
+}
+
+
   async uploadUserProfileImage(
     userId: number,
     file: Express.Multer.File,
