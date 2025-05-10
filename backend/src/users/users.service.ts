@@ -63,6 +63,10 @@ export class UsersService {
     await this.userRepo.update(userId, { url_profile_image: imageUrl });
   }
 
+  async updateCoverImage(userId: number, imageUrl: string): Promise<void> {
+    await this.userRepo.update(userId, { url_cover_image: imageUrl });
+  }
+
   async login(email: string, password: string): Promise<string> {
     const user = await this.userRepo.findOne({ where: { email } });
     if (!user) {

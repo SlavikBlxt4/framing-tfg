@@ -58,6 +58,64 @@ export class UsersController {
     return { imageUrl };
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('photographers/upload-profile-image')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: FileUploadDto })
+  @ApiOperation({ summary: 'Sube imagen de perfil como fotógrafo' })
+  async uploadPhotographerProfile(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: any,
+  ) {
+    const userId = req.user.userId;
+    const role = req.user.role;
+
+    if (role !== UserRole.PHOTOGRAPHER) {
+      throw new ForbiddenException(
+        'Solo los fotógrafos pueden subir su imagen de perfil.',
+      );
+    }
+
+    const imageUrl = await this.s3Service.uploadToPath(
+      `photographers/${userId}/perfil/foto.jpg`,
+      file,
+    );
+
+    await this.usersService.updateProfileImage(userId, imageUrl);
+    return { imageUrl };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('photographers/upload-cover-image')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: FileUploadDto })
+  @ApiOperation({ summary: 'Sube imagen de portada del fotógrafo' })
+  async uploadPhotographerCover(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: any,
+  ) {
+    const userId = req.user.userId;
+    const role = req.user.role;
+
+    if (role !== UserRole.PHOTOGRAPHER) {
+      throw new ForbiddenException(
+        'Solo los fotógrafos pueden subir su portada.',
+      );
+    }
+
+    const imageUrl = await this.s3Service.uploadToPath(
+      `photographers/${userId}/portada/portada.jpg`,
+      file,
+    );
+
+    await this.usersService.updateCoverImage(userId, imageUrl);
+    return { imageUrl };
+  }
+
   @Post('signup')
   @ApiOperation({ summary: 'Registrar nuevo usuario' })
   @ApiBody({ type: SignupDto })

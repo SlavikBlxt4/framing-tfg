@@ -11,6 +11,19 @@ export class S3Service {
     },
   });
 
+  async uploadToPath(key: string, file: Express.Multer.File): Promise<string> {
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET_PHOTOGRAPHERS,
+      Key: key,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    });
+
+    await this.s3.send(command);
+
+    return `https://${process.env.AWS_S3_BUCKET_PHOTOGRAPHERS}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+  }
+
   async uploadUserProfileImage(
     userId: number,
     file: Express.Multer.File,

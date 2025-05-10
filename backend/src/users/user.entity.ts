@@ -77,6 +77,11 @@ export class User {
   @IsOptional()
   url_profile_image?: string;
 
+  @Column({ nullable: true })
+  @IsString()
+  @IsOptional()
+  url_cover_image?: string;
+
   @OneToMany(() => Booking, (booking) => booking.client)
   bookings: Booking[];
 
