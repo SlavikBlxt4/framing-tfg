@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+
 
 @Injectable()
 export class S3Service {
@@ -47,4 +48,19 @@ export class S3Service {
 
     return `https://${process.env.AWS_S3_BUCKET_USERS}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
   }
+
+  async listPublicUrlsInPrefix(prefix: string): Promise<string[]> {
+  const command = new ListObjectsV2Command({
+    Bucket: process.env.AWS_S3_BUCKET_PHOTOGRAPHERS,
+    Prefix: prefix,
+  });
+
+  const response = await this.s3.send(command);
+
+  return (
+    response.Contents?.map(obj =>
+      `https://${process.env.AWS_S3_BUCKET_PHOTOGRAPHERS}.s3.${process.env.AWS_REGION}.amazonaws.com/${obj.Key}`
+    ) ?? []
+  );
+}
 }

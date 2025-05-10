@@ -3,6 +3,7 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  Param,
   Post,
   Req,
   UploadedFile,
@@ -168,6 +169,14 @@ async uploadProfileImage(
     return { uploaded };
   }
 
+  @Get('photographers/:id/portfolio')
+  @ApiOperation({ summary: 'Obtener las imágenes del portfolio de un fotógrafo' })
+  @ApiResponse({ status: 200, description: 'Lista de URLs públicas del portfolio' })
+  async getPhotographerPortfolio(@Param('id') photographerId: string) {
+    const prefix = `photographers/${photographerId}/portfolio/`;
+    const images = await this.s3Service.listPublicUrlsInPrefix(prefix);
+    return { images };
+  }
 
 
 
