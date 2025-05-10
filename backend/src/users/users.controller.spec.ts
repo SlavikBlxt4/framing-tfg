@@ -153,7 +153,7 @@ describe('UsersController', () => {
       } as any;
 
       const req = {
-        user: { userId: 1 },
+        user: { userId: 1, role: UserRole.CLIENT },
       } as any;
 
       mockS3Service.uploadUserProfileImage!.mockResolvedValue(

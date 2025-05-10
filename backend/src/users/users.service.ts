@@ -67,19 +67,21 @@ export class UsersService {
     await this.userRepo.update(userId, { url_cover_image: imageUrl });
   }
 
-  async setPortfolioUrlIfMissing(userId: number, portfolioUrl: string): Promise<void> {
-  const user = await this.userRepo.findOne({ where: { id: userId } });
+  async setPortfolioUrlIfMissing(
+    userId: number,
+    portfolioUrl: string,
+  ): Promise<void> {
+    const user = await this.userRepo.findOne({ where: { id: userId } });
 
-  if (!user) {
-    throw new Error('Usuario no encontrado');
+    if (!user) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    if (!user.url_portfolio) {
+      user.url_portfolio = portfolioUrl;
+      await this.userRepo.save(user);
+    }
   }
-
-  if (!user.url_portfolio) {
-    user.url_portfolio = portfolioUrl;
-    await this.userRepo.save(user);
-  }
-}
-
 
   async login(email: string, password: string): Promise<string> {
     const user = await this.userRepo.findOne({ where: { email } });

@@ -43,28 +43,32 @@ export class UsersController {
     private readonly s3Service: S3Service,
   ) {}
 
-@UseGuards(JwtAuthGuard)
-@Post('upload-profile-image')
-@UseInterceptors(FileInterceptor('file'))
-@ApiBearerAuth()
-@ApiConsumes('multipart/form-data')
-@ApiBody({ type: FileUploadDto })
-@ApiOperation({ summary: 'Sube una imagen de perfil para el usuario CLIENTE' })
-async uploadProfileImage(
-  @UploadedFile() file: Express.Multer.File,
-  @Req() req: any,
-) {
-  const userId = req.user.userId;
-  const role = req.user.role;
+  @UseGuards(JwtAuthGuard)
+  @Post('upload-profile-image')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: FileUploadDto })
+  @ApiOperation({
+    summary: 'Sube una imagen de perfil para el usuario CLIENTE',
+  })
+  async uploadProfileImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: any,
+  ) {
+    const userId = req.user.userId;
+    const role = req.user.role;
 
-  if (role !== UserRole.CLIENT) {
-    throw new ForbiddenException('Solo los clientes pueden subir esta imagen de perfil.');
+    if (role !== UserRole.CLIENT) {
+      throw new ForbiddenException(
+        'Solo los clientes pueden subir esta imagen de perfil.',
+      );
+    }
+
+    const imageUrl = await this.s3Service.uploadUserProfileImage(userId, file);
+    await this.usersService.updateProfileImage(userId, imageUrl);
+    return { imageUrl };
   }
-
-  const imageUrl = await this.s3Service.uploadUserProfileImage(userId, file);
-  await this.usersService.updateProfileImage(userId, imageUrl);
-  return { imageUrl };
-}
 
   @UseGuards(JwtAuthGuard)
   @Post('photographers/upload-profile-image')
@@ -152,7 +156,9 @@ async uploadProfileImage(
     const role = req.user.role;
 
     if (role !== UserRole.PHOTOGRAPHER) {
-      throw new ForbiddenException('Solo los fotógrafos pueden subir su portfolio.');
+      throw new ForbiddenException(
+        'Solo los fotógrafos pueden subir su portfolio.',
+      );
     }
 
     const uploaded: string[] = [];
@@ -163,23 +169,27 @@ async uploadProfileImage(
       uploaded.push(url);
     }
 
-    const baseUrl = this.s3Service.getPublicBaseUrl(`photographers/${userId}/portfolio/`);
+    const baseUrl = this.s3Service.getPublicBaseUrl(
+      `photographers/${userId}/portfolio/`,
+    );
     await this.usersService.setPortfolioUrlIfMissing(userId, baseUrl);
 
     return { uploaded };
   }
 
   @Get('photographers/:id/portfolio')
-  @ApiOperation({ summary: 'Obtener las imágenes del portfolio de un fotógrafo' })
-  @ApiResponse({ status: 200, description: 'Lista de URLs públicas del portfolio' })
+  @ApiOperation({
+    summary: 'Obtener las imágenes del portfolio de un fotógrafo',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de URLs públicas del portfolio',
+  })
   async getPhotographerPortfolio(@Param('id') photographerId: string) {
     const prefix = `photographers/${photographerId}/portfolio/`;
     const images = await this.s3Service.listPublicUrlsInPrefix(prefix);
     return { images };
   }
-
-
-
 
   @Post('signup')
   @ApiOperation({ summary: 'Registrar nuevo usuario' })
