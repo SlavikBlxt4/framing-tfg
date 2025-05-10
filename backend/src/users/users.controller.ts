@@ -6,6 +6,7 @@ import {
   Post,
   Req,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -30,7 +31,7 @@ import { TopPhotographerDto } from './dto/top-photographer.dto';
 import { PhotographerPublicDto } from './dto/photographer-public.dto';
 
 import { S3Service } from 'src/s3/s3.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { FileUploadDto } from './dto/file-upload.dto';
 
 @ApiTags('users')
@@ -123,32 +124,50 @@ async uploadProfileImage(
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('photographers/upload-portfolio-image')
-  @UseInterceptors(FileInterceptor('file'))
+  @Post('photographers/upload-portfolio-images')
+  @UseInterceptors(FilesInterceptor('files', 10))
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: FileUploadDto })
-  @ApiOperation({ summary: 'Sube imagen al portfolio del fotógrafo' })
-  async uploadPortfolioImage(
-    @UploadedFile() file: Express.Multer.File,
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    },
+  })
+  @ApiOperation({ summary: 'Sube varias imágenes al portfolio del fotógrafo' })
+  async uploadPortfolioImages(
+    @UploadedFiles() files: Express.Multer.File[],
     @Req() req: any,
   ) {
     const userId = req.user.userId;
     const role = req.user.role;
 
     if (role !== UserRole.PHOTOGRAPHER) {
-      throw new ForbiddenException('Solo los fotógrafos pueden subir al portfolio.');
+      throw new ForbiddenException('Solo los fotógrafos pueden subir su portfolio.');
     }
 
-    const key = `photographers/${userId}/portfolio/portfolio_${Date.now()}_${file.originalname}`;
-    const imageUrl = await this.s3Service.uploadToPath(key, file) ;
+    const uploaded: string[] = [];
 
-    // ✅ Aquí llamamos a guardar el URL base SOLO si no existe aún
-    const portfolioBaseUrl = this.s3Service.getPublicBaseUrl(key); // método nuevo sugerido abajo
-    await this.usersService.setPortfolioUrlIfMissing(userId, portfolioBaseUrl);
+    for (const file of files) {
+      const key = `photographers/${userId}/portfolio/portfolio_${Date.now()}_${file.originalname}`;
+      const url = await this.s3Service.uploadToPath(key, file);
+      uploaded.push(url);
+    }
 
-    return { imageUrl };
+    const baseUrl = this.s3Service.getPublicBaseUrl(`photographers/${userId}/portfolio/`);
+    await this.usersService.setPortfolioUrlIfMissing(userId, baseUrl);
+
+    return { uploaded };
   }
+
 
 
 
