@@ -9,10 +9,12 @@ import { ServicesService } from 'src/services/services.service';
 import { CategoriesService } from 'src/categories/categories.service';
 import { Category } from 'src/categories/category.entity';
 import { WeekDay } from 'src/week-day/entities/week-day.entity';
+import { S3Module } from 'src/s3/s3.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Booking, User, Service, Category, WeekDay]), // 👈 Esto es CLAVE
+    TypeOrmModule.forFeature([Booking, User, Service, Category, WeekDay]),
+    S3Module,
   ],
   controllers: [BookingsController],
   providers: [BookingsService, ServicesService, CategoriesService],

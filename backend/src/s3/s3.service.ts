@@ -3,7 +3,10 @@ import {
   S3Client,
   PutObjectCommand,
   ListObjectsV2Command,
+  GetObjectCommand,
 } from '@aws-sdk/client-s3';
+
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class S3Service {
@@ -65,5 +68,27 @@ export class S3Service {
           `https://${process.env.AWS_S3_BUCKET_PHOTOGRAPHERS}.s3.${process.env.AWS_REGION}.amazonaws.com/${encodeURIComponent(obj.Key)}`,
       ) ?? []
     );
+  }
+
+  async listRawKeysInPrefix(prefix: string): Promise<string[]> {
+    const command = new ListObjectsV2Command({
+      Bucket: process.env.AWS_S3_BUCKET_PHOTOGRAPHERS,
+      Prefix: prefix,
+    });
+
+    const response = await this.s3.send(command);
+    return response.Contents?.map((obj) => obj.Key!) ?? [];
+  }
+
+  async getSignedImageUrl(
+    key: string,
+    expiresInSeconds = 3600,
+  ): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET_PHOTOGRAPHERS,
+      Key: key,
+    });
+
+    return getSignedUrl(this.s3, command, { expiresIn: expiresInSeconds });
   }
 }

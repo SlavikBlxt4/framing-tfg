@@ -307,4 +307,10 @@ export class BookingsService {
       await this.bookingRepo.save(booking);
     }
   }
+  async findByIdWithServiceAndClient(id: number): Promise<Booking | null> {
+    return this.bookingRepo.findOne({
+      where: { id },
+      relations: ['service', 'service.photographer', 'client'],
+    });
+  }
 }

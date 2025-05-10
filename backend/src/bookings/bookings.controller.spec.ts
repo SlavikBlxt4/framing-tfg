@@ -3,6 +3,7 @@ import { BookingsController } from './bookings.controller';
 import { BookingsService } from './bookings.service';
 import { ServicesService } from '../services/services.service';
 import { BookingState } from './enums/booking-state.enum';
+import { S3Service } from 'src/s3/s3.service';
 
 describe('BookingsController', () => {
   let controller: BookingsController;
@@ -39,6 +40,7 @@ describe('BookingsController', () => {
       providers: [
         { provide: BookingsService, useValue: mockBookingService },
         { provide: ServicesService, useValue: {} },
+        { provide: S3Service, useValue: {} },
       ],
     }).compile();
 

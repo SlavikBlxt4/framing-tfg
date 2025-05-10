@@ -9,6 +9,7 @@ import {
   Res,
   HttpStatus,
   ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
@@ -29,6 +30,7 @@ import {
   ApiParam,
   ApiBody,
 } from '@nestjs/swagger';
+import { S3Service } from 'src/s3/s3.service';
 
 @ApiTags('bookings')
 @ApiBearerAuth()
@@ -38,6 +40,7 @@ export class BookingsController {
   constructor(
     private readonly bookingService: BookingsService,
     private readonly servicesService: ServicesService,
+    private readonly s3Service: S3Service,
   ) {}
 
   @Post('create')
@@ -246,5 +249,42 @@ export class BookingsController {
   ) {
     const availableSlots = await this.bookingService.checkAvailability(dto);
     return res.status(HttpStatus.OK).json({ availableSlots });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('sessions/:bookingId/images')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Ver imágenes privadas de una sesión (fotógrafo o cliente)',
+  })
+  async getSessionImages(
+    @Param('bookingId') bookingId: string,
+    @Req() req: any,
+  ) {
+    const userId = req.user.userId;
+
+    const booking = await this.bookingService.findByIdWithServiceAndClient(
+      Number(bookingId),
+    );
+
+    if (!booking) {
+      throw new NotFoundException('Sesión no encontrada');
+    }
+
+    const isPhotographer = booking.service.photographer.id === userId;
+    const isClient = booking.client.id === userId;
+
+    if (!isPhotographer && !isClient) {
+      throw new ForbiddenException('No tienes acceso a estas imágenes.');
+    }
+
+    const prefix = `photographers/${booking.service.photographer.id}/sesiones/${booking.id}/`;
+
+    const keys = await this.s3Service.listRawKeysInPrefix(prefix);
+    const signedUrls = await Promise.all(
+      keys.map((key) => this.s3Service.getSignedImageUrl(key)),
+    );
+
+    return { images: signedUrls };
   }
 }
