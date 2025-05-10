@@ -60,10 +60,10 @@ export class S3Service {
     const response = await this.s3.send(command);
 
     return (
-      response.Contents?.map(obj =>
-        `https://${process.env.AWS_S3_BUCKET_PHOTOGRAPHERS}.s3.${process.env.AWS_REGION}.amazonaws.com/${encodeURIComponent(obj.Key)}`
+      response.Contents?.map(
+        (obj) =>
+          `https://${process.env.AWS_S3_BUCKET_PHOTOGRAPHERS}.s3.${process.env.AWS_REGION}.amazonaws.com/${encodeURIComponent(obj.Key)}`,
       ) ?? []
     );
-
   }
 }

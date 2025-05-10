@@ -34,6 +34,7 @@ import { PhotographerPublicDto } from './dto/photographer-public.dto';
 import { S3Service } from 'src/s3/s3.service';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { FileUploadDto } from './dto/file-upload.dto';
+import { BookingsService } from 'src/bookings/bookings.service';
 
 @ApiTags('users')
 @Controller('users')
@@ -41,6 +42,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly s3Service: S3Service,
+    private readonly bookingService: BookingsService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -189,6 +191,68 @@ export class UsersController {
     const prefix = `photographers/${photographerId}/portfolio/`;
     const images = await this.s3Service.listPublicUrlsInPrefix(prefix);
     return { images };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('photographers/upload-session-images/:bookingId')
+  @UseInterceptors(FilesInterceptor('files', 10))
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    },
+  })
+  @ApiOperation({ summary: 'Sube imágenes privadas de una sesión' })
+  async uploadSessionImages(
+    @Param('bookingId') bookingId: string,
+    @UploadedFiles() files: Express.Multer.File[],
+    @Req() req: any,
+  ) {
+    const userId = req.user.userId;
+    const role = req.user.role;
+
+    if (role !== UserRole.PHOTOGRAPHER) {
+      throw new ForbiddenException(
+        'Solo los fotógrafos pueden subir imágenes de sesión.',
+      );
+    }
+
+    // Verifica que el booking le pertenezca
+    const booking = await this.bookingService.findById(Number(bookingId));
+    if (!booking || booking.service.photographer.id !== userId) {
+      throw new ForbiddenException(
+        'No tienes permiso para subir imágenes a esta sesión.',
+      );
+    }
+
+    const uploaded: string[] = [];
+
+    for (const file of files) {
+      const key = `photographers/${userId}/sesiones/${bookingId}/${Date.now()}_${file.originalname}`;
+      const url = await this.s3Service.uploadToPath(key, file);
+      uploaded.push(url);
+    }
+
+    // Solo guardar url_images si está vacío
+    const sessionPath = this.s3Service.getPublicBaseUrl(
+      `photographers/${userId}/sesiones/${bookingId}/`,
+    );
+    await this.bookingService.setUrlImagesIfMissing(
+      Number(bookingId),
+      sessionPath,
+    );
+
+    return { uploaded };
   }
 
   @Post('signup')

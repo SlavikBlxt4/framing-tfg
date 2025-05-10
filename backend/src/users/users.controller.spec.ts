@@ -4,6 +4,7 @@ import { UsersService } from './users.service';
 import { UserRole } from './user.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { S3Service } from 'src/s3/s3.service';
+import { BookingsService } from '../bookings/bookings.service';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -24,12 +25,18 @@ describe('UsersController', () => {
       .mockResolvedValue('https://mocked-url.com/image.jpg'),
   };
 
+  const mockBookingsService = {
+    // puedes añadir métodos simulados si se usan en los tests
+    findById: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [
         { provide: UsersService, useValue: mockUsersService },
         { provide: S3Service, useValue: mockS3Service },
+        { provide: BookingsService, useValue: mockBookingsService },
       ],
     }).compile();
 

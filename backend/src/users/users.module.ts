@@ -7,6 +7,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { Service } from 'src/services/service.entity';
 import { Booking } from 'src/bookings/booking.entity';
 import { S3Module } from 'src/s3/s3.module';
+import { BookingsService } from 'src/bookings/bookings.service';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { S3Module } from 'src/s3/s3.module';
     AuthModule,
     S3Module,
   ],
-  providers: [UsersService],
+  providers: [UsersService, BookingsService],
   controllers: [UsersController],
 })
 export class UsersModule {}

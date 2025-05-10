@@ -292,4 +292,19 @@ export class BookingsService {
       return { start, end };
     });
   }
+
+  async findById(id: number): Promise<Booking | null> {
+    return this.bookingRepo.findOne({
+      where: { id },
+      relations: ['service', 'service.photographer'],
+    });
+  }
+
+  async setUrlImagesIfMissing(id: number, url: string): Promise<void> {
+    const booking = await this.bookingRepo.findOne({ where: { id } });
+    if (booking && !booking.urlImages) {
+      booking.urlImages = url;
+      await this.bookingRepo.save(booking);
+    }
+  }
 }
