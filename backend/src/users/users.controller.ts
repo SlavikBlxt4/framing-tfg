@@ -3,6 +3,7 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  NotFoundException,
   Param,
   Post,
   Req,
@@ -366,6 +367,28 @@ export class UsersController {
     await this.usersService.updatePhotographerProfile(userId, updateDto);
     return { message: 'Perfil actualizado correctamente' };
   }
+
+  
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener datos públicos de un usuario por ID' })
+  @ApiResponse({ status: 200, type: UserResponseDto })
+  async getUserById(@Param('id') id: string): Promise<UserResponseDto> {
+    const user = await this.usersService.findById(Number(id));
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone_number: user.phone_number,
+      role: user.role,
+      active: user.active,
+      url_profile_image: user.url_profile_image,
+    };
+  }
+
 
 
 }

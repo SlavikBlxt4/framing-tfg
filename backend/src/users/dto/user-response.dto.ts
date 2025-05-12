@@ -19,4 +19,7 @@ export class UserResponseDto {
 
   @ApiProperty()
   active: boolean;
+
+  @ApiProperty({ required: false })
+  url_profile_image?: string;
 }
