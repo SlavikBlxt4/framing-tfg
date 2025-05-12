@@ -30,11 +30,14 @@ import { UserRole } from './user.entity';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { TopPhotographerDto } from './dto/top-photographer.dto';
 import { PhotographerPublicDto } from './dto/photographer-public.dto';
-
 import { S3Service } from 'src/s3/s3.service';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { FileUploadDto } from './dto/file-upload.dto';
 import { BookingsService } from 'src/bookings/bookings.service';
+import { Patch } from '@nestjs/common';
+import { UpdateClientProfileDto } from './dto/update-client-profile.dto';
+
+
 
 @ApiTags('users')
 @Controller('users')
@@ -331,5 +334,26 @@ export class UsersController {
   })
   async getAllPhotographers(): Promise<PhotographerPublicDto[]> {
     return this.usersService.getAllPhotographers();
+  }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Actualizar perfil de un usuario cliente' })
+  @ApiBody({ type: UpdateClientProfileDto })
+  async updateClientProfile(
+    @Req() req: any,
+    @Body() updateDto: UpdateClientProfileDto,
+  ) {
+    const userId = req.user.userId;
+    const role = req.user.role;
+
+    if (role !== UserRole.CLIENT) {
+      throw new ForbiddenException('Solo los clientes pueden editar su perfil.');
+    }
+
+    await this.usersService.updateClientProfile(userId, updateDto);
+    return { message: 'Perfil actualizado correctamente' };
   }
 }

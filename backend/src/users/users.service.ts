@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Service } from '../services/service.entity'; // entidad de servicios
 import { PhotographerPublicDto } from './dto/photographer-public.dto';
+import { UpdateClientProfileDto } from './dto/update-client-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -204,5 +205,34 @@ export class UsersService {
         availability: week,
       };
     });
+  }
+
+  async updateClientProfile(
+    userId: number,
+    dto: UpdateClientProfileDto,
+  ): Promise<void> {
+    const user = await this.userRepo.findOneBy({ id: userId });
+
+    if (!user || user.role !== UserRole.CLIENT) {
+      throw new UnauthorizedException('Solo los clientes pueden actualizar su perfil.');
+    }
+
+    if (dto.name) {
+      user.name = dto.name;
+    }
+
+    if (dto.password) {
+      user.password_hash = await bcrypt.hash(dto.password, 10);
+    }
+
+    if (dto.phone_number) {
+      user.phone_number = dto.phone_number;
+    }
+
+    if (dto.url_profile_image) {
+      user.url_profile_image = dto.url_profile_image;
+    }
+
+    await this.userRepo.save(user);
   }
 }
