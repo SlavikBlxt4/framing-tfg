@@ -36,6 +36,7 @@ import { FileUploadDto } from './dto/file-upload.dto';
 import { BookingsService } from 'src/bookings/bookings.service';
 import { Patch } from '@nestjs/common';
 import { UpdateClientProfileDto } from './dto/update-client-profile.dto';
+import { UpdatePhotographerProfileDto } from './dto/update-photographer-profile.dto';
 
 
 
@@ -340,20 +341,31 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Patch('me')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Actualizar perfil de un usuario cliente' })
+  @ApiOperation({ summary: 'Actualizar perfil del cliente autenticado' })
   @ApiBody({ type: UpdateClientProfileDto })
   async updateClientProfile(
     @Req() req: any,
     @Body() updateDto: UpdateClientProfileDto,
   ) {
     const userId = req.user.userId;
-    const role = req.user.role;
-
-    if (role !== UserRole.CLIENT) {
-      throw new ForbiddenException('Solo los clientes pueden editar su perfil.');
-    }
-
     await this.usersService.updateClientProfile(userId, updateDto);
     return { message: 'Perfil actualizado correctamente' };
   }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('photographers/me')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Actualizar perfil del fotógrafo autenticado' })
+  @ApiBody({ type: UpdatePhotographerProfileDto })
+  async updatePhotographerProfile(
+    @Req() req: any,
+    @Body() updateDto: UpdatePhotographerProfileDto,
+  ) {
+    const userId = req.user.userId;
+    await this.usersService.updatePhotographerProfile(userId, updateDto);
+    return { message: 'Perfil actualizado correctamente' };
+  }
+
+
 }

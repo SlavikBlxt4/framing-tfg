@@ -11,6 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Service } from '../services/service.entity'; // entidad de servicios
 import { PhotographerPublicDto } from './dto/photographer-public.dto';
 import { UpdateClientProfileDto } from './dto/update-client-profile.dto';
+import { UpdatePhotographerProfileDto } from './dto/update-photographer-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -212,27 +213,30 @@ export class UsersService {
     dto: UpdateClientProfileDto,
   ): Promise<void> {
     const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) throw new Error('Usuario no encontrado');
 
-    if (!user || user.role !== UserRole.CLIENT) {
-      throw new UnauthorizedException('Solo los clientes pueden actualizar su perfil.');
-    }
-
-    if (dto.name) {
-      user.name = dto.name;
-    }
-
-    if (dto.password) {
-      user.password_hash = await bcrypt.hash(dto.password, 10);
-    }
-
-    if (dto.phone_number) {
-      user.phone_number = dto.phone_number;
-    }
-
-    if (dto.url_profile_image) {
-      user.url_profile_image = dto.url_profile_image;
-    }
+    if (dto.name) user.name = dto.name;
+    if (dto.password) user.password_hash = await bcrypt.hash(dto.password, 10);
+    if (dto.phone_number) user.phone_number = dto.phone_number;
 
     await this.userRepo.save(user);
   }
+
+
+  async updatePhotographerProfile(
+    userId: number,
+    dto: UpdatePhotographerProfileDto,
+  ): Promise<void> {
+    const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) throw new Error('Usuario no encontrado');
+
+    if (dto.name) user.name = dto.name;
+    if (dto.password) user.password_hash = await bcrypt.hash(dto.password, 10);
+    if (dto.phone_number) user.phone_number = dto.phone_number;
+    if (dto.description) user.description = dto.description;
+
+    await this.userRepo.save(user);
+  }
+
+
 }
