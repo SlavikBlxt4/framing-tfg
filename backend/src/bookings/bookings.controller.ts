@@ -117,8 +117,8 @@ export class BookingsController {
     return res.status(HttpStatus.OK).json(response);
   }
 
-  @Post(':id/cancel')
-  @ApiOperation({ summary: 'Cancelar una reserva' })
+  @Post(':id/cancel-by-photographer')
+  @ApiOperation({ summary: 'Cancelar una reserva como fotógrafo' })
   @ApiParam({ name: 'id', type: Number, description: 'ID de la reserva' })
   @ApiResponse({
     status: 200,
