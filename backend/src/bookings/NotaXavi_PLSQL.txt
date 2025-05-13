@@ -1,0 +1,51 @@
+-- Función enforce_booking_state_transition()
+
+CREATE OR REPLACE FUNCTION public.enforce_booking_state_transition()
+RETURNS trigger AS $$
+DECLARE
+    user_role TEXT;
+    current_state TEXT;
+    new_state TEXT;
+BEGIN
+    -- Si no hay cambio de estado, no validar nada
+    IF NEW.state = OLD.state THEN
+        RETURN NEW;
+    END IF;
+
+    -- Obtener el rol del usuario autenticado desde el campo client_id o photographer_id
+    -- NOTA: Esto asume que el backend NO intenta cambiar el client_id al hacer UPDATE.
+    SELECT role INTO user_role FROM public.users WHERE id = NEW.client_id;
+
+    current_state := OLD.state;
+    new_state := NEW.state;
+
+    -- Solo controlar transiciones desde 'pending'
+    IF current_state = 'pending' THEN
+        IF new_state = 'active' THEN
+            IF user_role <> 'PHOTOGRAPHER' THEN
+                RAISE EXCEPTION 'Solo los fotógrafos pueden confirmar reservas';
+            END IF;
+        ELSIF new_state = 'cancelled' THEN
+            IF user_role NOT IN ('CLIENT', 'PHOTOGRAPHER') THEN
+                RAISE EXCEPTION 'Solo clientes o fotógrafos pueden cancelar reservas';
+            END IF;
+        ELSE
+            RAISE EXCEPTION 'Transición no permitida desde estado pending a %', new_state;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+-- Trigger asociado a booking (solo en UPDATE)
+
+DROP TRIGGER IF EXISTS trg_enforce_booking_state_transition ON public.booking;
+
+CREATE TRIGGER trg_enforce_booking_state_transition
+BEFORE UPDATE ON public.booking
+FOR EACH ROW
+WHEN (OLD.state IS DISTINCT FROM NEW.state)
+EXECUTE FUNCTION public.enforce_booking_state_transition();

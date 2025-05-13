@@ -287,4 +287,33 @@ export class BookingsController {
 
     return { images: signedUrls };
   }
+
+
+  @Post(':id/cancel-by-client')
+  @ApiOperation({ summary: 'Cancelar una reserva como cliente' })
+  @ApiParam({ name: 'id', type: Number })
+  @ApiResponse({ status: 200, description: 'Reserva cancelada por el cliente', type: BookingResponseDto })
+  async cancelBookingByClient(
+    @Param('id') bookingId: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const clientId = req.user['userId'];
+
+    const booking = await this.bookingService.cancelBookingByClient(bookingId, clientId);
+
+    const response: BookingResponseDto = {
+      bookingId: booking.id,
+      serviceName: booking.service.name,
+      price: booking.service.price,
+      date: booking.date.toISOString(),
+      clientName: booking.client.name,
+      clientEmail: booking.client.email,
+      status: booking.state,
+      bookedMinutes: booking.bookedMinutes,
+    };
+
+    return res.status(HttpStatus.OK).json(response);
+  }
+
 }

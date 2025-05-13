@@ -313,4 +313,20 @@ export class BookingsService {
       relations: ['service', 'service.photographer', 'client'],
     });
   }
+
+  async cancelBookingByClient(bookingId: number, clientId: number): Promise<Booking> {
+    const booking = await this.bookingRepo.findOne({
+      where: { id: bookingId },
+      relations: ['client', 'service', 'service.photographer'],
+    });
+
+    if (!booking) throw new NotFoundException('Reserva no encontrada');
+    if (booking.client.id !== clientId) {
+      throw new ForbiddenException('No autorizado para cancelar esta reserva');
+    }
+
+    booking.state = BookingState.CANCELLED;
+    return this.bookingRepo.save(booking);
+  }
+
 }
