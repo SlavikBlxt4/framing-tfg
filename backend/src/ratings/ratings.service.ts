@@ -12,6 +12,7 @@ import { User } from '../users/user.entity';
 import { Service } from '../services/service.entity';
 
 import { RatingUserResponseDto } from './dto/rating-user-response.dto';
+import { RatingHistoryResponseDto } from './dto/rating-history-response.dto';
 
 @Injectable()
 export class RatingsService {
@@ -86,4 +87,28 @@ export class RatingsService {
         'https://cdn.cosmos.so/default-avatar.jpg',
     }));
   }
+
+
+  async getUserRatings(clientId: number): Promise<RatingHistoryResponseDto[]> {
+    const ratings = await this.ratingRepo.find({
+      where: { client: { id: clientId } },
+      relations: ['service', 'service.photographer'],
+      order: { createdAt: 'DESC' },
+    });
+
+    return ratings.map((r) => ({
+      id: r.id,
+      rating: r.rating,
+      comment: r.comment ?? '',
+      fecha: r.createdAt.toLocaleDateString('es-ES'),
+      serviceName: r.service.name,
+      photographerName: r.service.photographer.name,
+      photographerId: r.service.photographer.id,
+      photographerAvatar:
+        r.service.photographer.url_profile_image ??
+        'https://cdn.cosmos.so/default-avatar.jpg',
+    }));
+  }
+
+
 }

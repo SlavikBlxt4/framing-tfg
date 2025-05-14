@@ -24,6 +24,7 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
+import { RatingHistoryResponseDto } from './dto/rating-history-response.dto';
 
 @ApiTags('ratings')
 @ApiBearerAuth()
@@ -71,4 +72,19 @@ export class RatingsController {
   async getRatings(@Param('serviceId', ParseIntPipe) serviceId: number) {
     return this.ratingsService.getFormattedRatings(serviceId);
   }
+
+
+  @Get('history')
+  @ApiOperation({ summary: 'Obtener histórico de reseñas del usuario autenticado' })
+  @ApiResponse({
+    status: 200,
+    description: 'Listado de reseñas hechas por el usuario',
+    type: [RatingHistoryResponseDto],
+  })
+  async getUserRatings(@Req() req: Request, @Res() res: Response) {
+    const clientId = req.user['userId'];
+    const history = await this.ratingsService.getUserRatings(clientId);
+    return res.status(HttpStatus.OK).json(history);
+  }
+
 }
