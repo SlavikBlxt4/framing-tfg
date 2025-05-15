@@ -57,6 +57,7 @@ export class UsersService {
       phone_number: phoneNumber,
       role,
       active: true,
+      registry_date: new Date(),
     });
 
     return this.userRepo.save(newUser);
