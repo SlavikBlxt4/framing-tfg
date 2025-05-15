@@ -14,6 +14,7 @@ import { ScheduleModule } from './schedule/schedule.module';
 import { WeekDayModule } from './week-day/week-day.module';
 import { S3Service } from './s3/s3.service';
 import { S3Module } from './s3/s3.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { S3Module } from './s3/s3.module';
     PhotographerAvailabilityModule,
     ScheduleModule,
     WeekDayModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

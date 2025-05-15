@@ -288,11 +288,14 @@ export class BookingsController {
     return { images: signedUrls };
   }
 
-
   @Post(':id/cancel-by-client')
   @ApiOperation({ summary: 'Cancelar una reserva como cliente' })
   @ApiParam({ name: 'id', type: Number })
-  @ApiResponse({ status: 200, description: 'Reserva cancelada por el cliente', type: BookingResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Reserva cancelada por el cliente',
+    type: BookingResponseDto,
+  })
   async cancelBookingByClient(
     @Param('id') bookingId: number,
     @Req() req: Request,
@@ -300,7 +303,10 @@ export class BookingsController {
   ) {
     const clientId = req.user['userId'];
 
-    const booking = await this.bookingService.cancelBookingByClient(bookingId, clientId);
+    const booking = await this.bookingService.cancelBookingByClient(
+      bookingId,
+      clientId,
+    );
 
     const response: BookingResponseDto = {
       bookingId: booking.id,
@@ -326,11 +332,13 @@ export class BookingsController {
   async getPendingNext5Days(@Req() req: Request): Promise<BookingInfoDto[]> {
     const user = req.user;
     if (user['role'] !== 'PHOTOGRAPHER') {
-      throw new ForbiddenException('Solo los fotógrafos pueden acceder a esta ruta');
+      throw new ForbiddenException(
+        'Solo los fotógrafos pueden acceder a esta ruta',
+      );
     }
 
-    return this.bookingService.findPendingNext5DaysByPhotographer(user['userId']);
+    return this.bookingService.findPendingNext5DaysByPhotographer(
+      user['userId'],
+    );
   }
-
-
 }

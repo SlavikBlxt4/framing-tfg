@@ -39,8 +39,6 @@ import { Patch } from '@nestjs/common';
 import { UpdateClientProfileDto } from './dto/update-client-profile.dto';
 import { UpdatePhotographerProfileDto } from './dto/update-photographer-profile.dto';
 
-
-
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
@@ -338,7 +336,6 @@ export class UsersController {
     return this.usersService.getAllPhotographers();
   }
 
-
   @UseGuards(JwtAuthGuard)
   @Patch('me')
   @ApiBearerAuth()
@@ -353,7 +350,6 @@ export class UsersController {
     return { message: 'Perfil actualizado correctamente' };
   }
 
-  
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiBearerAuth()
@@ -374,16 +370,18 @@ export class UsersController {
     };
   }
 
-
   @UseGuards(JwtAuthGuard)
   @Get('me/photographer-profile')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Obtener el perfil completo del fotógrafo logueado' })
-  async getMyPhotographerProfile(@Req() req: Request): Promise<PhotographerPublicDto> {
+  @ApiOperation({
+    summary: 'Obtener el perfil completo del fotógrafo logueado',
+  })
+  async getMyPhotographerProfile(
+    @Req() req: Request,
+  ): Promise<PhotographerPublicDto> {
     const userId = req.user['userId']; // id del token JWT
     return this.usersService.getPhotographerProfileById(userId);
   }
-
 
   @UseGuards(JwtAuthGuard)
   @Patch('photographers/me')
@@ -398,12 +396,12 @@ export class UsersController {
     const role = req.user.role;
 
     if (role !== UserRole.PHOTOGRAPHER) {
-      throw new ForbiddenException('Solo los fotógrafos pueden actualizar su perfil.');
+      throw new ForbiddenException(
+        'Solo los fotógrafos pueden actualizar su perfil.',
+      );
     }
 
     await this.usersService.updatePhotographerProfile(userId, updateDto);
     return { message: 'Perfil actualizado correctamente' };
   }
-
-
 }

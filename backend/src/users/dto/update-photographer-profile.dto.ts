@@ -16,7 +16,9 @@ export class UpdatePhotographerProfileDto {
   @MaxLength(255)
   name?: string;
 
-  @ApiPropertyOptional({ description: 'Nueva contraseña del fotógrafo (mínimo 6 caracteres)' })
+  @ApiPropertyOptional({
+    description: 'Nueva contraseña del fotógrafo (mínimo 6 caracteres)',
+  })
   @IsOptional()
   @IsString()
   @MinLength(6)
@@ -29,18 +31,26 @@ export class UpdatePhotographerProfileDto {
   })
   phone_number?: string;
 
-  @ApiPropertyOptional({ description: 'Nueva descripción del perfil del fotógrafo' })
+  @ApiPropertyOptional({
+    description: 'Nueva descripción del perfil del fotógrafo',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(255)
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Latitud de la nueva ubicación del fotógrafo', example: 40.4168 })
+  @ApiPropertyOptional({
+    description: 'Latitud de la nueva ubicación del fotógrafo',
+    example: 40.4168,
+  })
   @IsOptional()
   @IsLatitude()
   latitude?: number;
 
-  @ApiPropertyOptional({ description: 'Longitud de la nueva ubicación del fotógrafo', example: -3.7038 })
+  @ApiPropertyOptional({
+    description: 'Longitud de la nueva ubicación del fotógrafo',
+    example: -3.7038,
+  })
   @IsOptional()
   @IsLongitude()
   longitude?: number;

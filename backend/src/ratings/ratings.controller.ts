@@ -73,9 +73,10 @@ export class RatingsController {
     return this.ratingsService.getFormattedRatings(serviceId);
   }
 
-
   @Get('history')
-  @ApiOperation({ summary: 'Obtener histórico de reseñas del usuario autenticado' })
+  @ApiOperation({
+    summary: 'Obtener histórico de reseñas del usuario autenticado',
+  })
   @ApiResponse({
     status: 200,
     description: 'Listado de reseñas hechas por el usuario',
@@ -86,5 +87,4 @@ export class RatingsController {
     const history = await this.ratingsService.getUserRatings(clientId);
     return res.status(HttpStatus.OK).json(history);
   }
-
 }

@@ -224,8 +224,9 @@ export class UsersService {
     await this.userRepo.save(user);
   }
 
-
-  async getPhotographerProfileById(userId: number): Promise<PhotographerPublicDto> {
+  async getPhotographerProfileById(
+    userId: number,
+  ): Promise<PhotographerPublicDto> {
     const user = await this.userRepo.findOne({
       where: {
         id: userId,
@@ -282,7 +283,6 @@ export class UsersService {
     };
   }
 
-
   async updatePhotographerProfile(
     userId: number,
     dto: UpdatePhotographerProfileDto,
@@ -323,7 +323,4 @@ export class UsersService {
       }
     }
   }
-
-
-  
 }

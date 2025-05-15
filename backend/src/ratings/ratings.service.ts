@@ -88,7 +88,6 @@ export class RatingsService {
     }));
   }
 
-
   async getUserRatings(clientId: number): Promise<RatingHistoryResponseDto[]> {
     const ratings = await this.ratingRepo.find({
       where: { client: { id: clientId } },
@@ -109,6 +108,4 @@ export class RatingsService {
         'https://cdn.cosmos.so/default-avatar.jpg',
     }));
   }
-
-
 }

@@ -314,7 +314,10 @@ export class BookingsService {
     });
   }
 
-  async cancelBookingByClient(bookingId: number, clientId: number): Promise<Booking> {
+  async cancelBookingByClient(
+    bookingId: number,
+    clientId: number,
+  ): Promise<Booking> {
     const booking = await this.bookingRepo.findOne({
       where: { id: bookingId },
       relations: ['client', 'service', 'service.photographer'],
@@ -329,8 +332,9 @@ export class BookingsService {
     return this.bookingRepo.save(booking);
   }
 
-
-  async findPendingNext5DaysByPhotographer(photographerId: number): Promise<BookingInfoDto[]> {
+  async findPendingNext5DaysByPhotographer(
+    photographerId: number,
+  ): Promise<BookingInfoDto[]> {
     const now = dayjs().startOf('day');
     const fiveDaysLater = now.add(5, 'day').endOf('day');
 
@@ -358,6 +362,4 @@ export class BookingsService {
       [photographerId, now.toISOString(), fiveDaysLater.toISOString()],
     );
   }
-
-
 }
