@@ -329,4 +329,35 @@ export class BookingsService {
     return this.bookingRepo.save(booking);
   }
 
+
+  async findPendingNext5DaysByPhotographer(photographerId: number): Promise<BookingInfoDto[]> {
+    const now = dayjs().startOf('day');
+    const fiveDaysLater = now.add(5, 'day').endOf('day');
+
+    return this.bookingRepo.query(
+      `
+        SELECT b.id as "bookingId",
+              b.client_id as "clientId",
+              b.booking_date as "bookingDate",
+              b.state as "state",
+              s.id as "serviceId",
+              s.name as "serviceName",
+              s.price as "price",
+              u.name as "clientName",
+              u.email as "clientEmail",
+              b.date as "date",
+              b.booked_minutes as "bookedMinutes"
+        FROM booking b
+        JOIN service s ON b.service_id = s.id
+        JOIN users u ON b.client_id = u.id
+        WHERE s.photographer_id = $1
+          AND b.state = 'pending'
+          AND b.date BETWEEN $2 AND $3
+        ORDER BY b.date ASC
+      `,
+      [photographerId, now.toISOString(), fiveDaysLater.toISOString()],
+    );
+  }
+
+
 }

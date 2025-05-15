@@ -316,4 +316,21 @@ export class BookingsController {
     return res.status(HttpStatus.OK).json(response);
   }
 
+  @Get('pending-bookings-photographer/next-5-days')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Ver reservas pendientes del fotógrafo en los próximos 5 días',
+  })
+  @ApiResponse({ status: 200, type: [BookingInfoDto] })
+  @ApiResponse({ status: 403, description: 'Solo fotógrafos pueden acceder' })
+  async getPendingNext5Days(@Req() req: Request): Promise<BookingInfoDto[]> {
+    const user = req.user;
+    if (user['role'] !== 'PHOTOGRAPHER') {
+      throw new ForbiddenException('Solo los fotógrafos pueden acceder a esta ruta');
+    }
+
+    return this.bookingService.findPendingNext5DaysByPhotographer(user['userId']);
+  }
+
+
 }
