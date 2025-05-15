@@ -390,5 +390,15 @@ export class UsersController {
   }
 
 
+  @UseGuards(JwtAuthGuard)
+  @Get('me/photographer-profile')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener el perfil completo del fotógrafo logueado' })
+  async getMyPhotographerProfile(@Req() req: Request): Promise<PhotographerPublicDto> {
+    const userId = req.user['userId']; // id del token JWT
+    return this.usersService.getPhotographerProfileById(userId);
+  }
+
+
 
 }

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -236,6 +237,64 @@ export class UsersService {
     if (dto.description) user.description = dto.description;
 
     await this.userRepo.save(user);
+  }
+
+
+  async getPhotographerProfileById(userId: number): Promise<PhotographerPublicDto> {
+    const user = await this.userRepo.findOne({
+      where: {
+        id: userId,
+        role: UserRole.PHOTOGRAPHER,
+      },
+      relations: {
+        services: {
+          ratings: true,
+        },
+        locations: true,
+        availability: {
+          day: true,
+          schedule: true,
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Fotógrafo no encontrado o no autorizado');
+    }
+
+    const allRatings = user.services.flatMap((s) => s.ratings ?? []);
+    const sum = allRatings.reduce((acc, r) => acc + (r.rating || 0), 0);
+    const average = allRatings.length > 0 ? sum / allRatings.length : 0;
+
+    const week = Array.from({ length: 7 }, (_, i) => ({
+      day: i + 1,
+      slots: [],
+    }));
+
+    user.availability?.forEach((slot) => {
+      const dayIndex = slot.day.id - 1;
+      week[dayIndex].slots.push({
+        start: slot.schedule.starting_hour,
+        end: slot.schedule.ending_hour,
+      });
+    });
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone_number: user.phone_number,
+      registry_date: user.registry_date,
+      active: user.active,
+      role: user.role,
+      description: user.description,
+      url_portfolio: user.url_portfolio,
+      url_profile_image: user.url_profile_image,
+      services: user.services,
+      locations: user.locations,
+      averageRating: parseFloat(average.toFixed(2)),
+      availability: week,
+    };
   }
 
 

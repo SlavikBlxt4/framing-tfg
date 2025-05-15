@@ -15,4 +15,13 @@ export class PhotographerPublicDto {
   services: Service[];
   locations: Location[];
   averageRating: number;
+
+  availability?: {
+    day: number;
+    slots: {
+      start: string;
+      end: string;
+    }[];
+  }[];
 }
+
