@@ -353,21 +353,6 @@ export class UsersController {
     return { message: 'Perfil actualizado correctamente' };
   }
 
-
-  @UseGuards(JwtAuthGuard)
-  @Patch('photographers/me')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Actualizar perfil del fotógrafo autenticado' })
-  @ApiBody({ type: UpdatePhotographerProfileDto })
-  async updatePhotographerProfile(
-    @Req() req: any,
-    @Body() updateDto: UpdatePhotographerProfileDto,
-  ) {
-    const userId = req.user.userId;
-    await this.usersService.updatePhotographerProfile(userId, updateDto);
-    return { message: 'Perfil actualizado correctamente' };
-  }
-
   
   @UseGuards(JwtAuthGuard)
   @Get(':id')
@@ -399,6 +384,26 @@ export class UsersController {
     return this.usersService.getPhotographerProfileById(userId);
   }
 
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('photographers/me')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Actualizar perfil del fotógrafo autenticado' })
+  @ApiBody({ type: UpdatePhotographerProfileDto })
+  async updatePhotographerProfile(
+    @Req() req: any,
+    @Body() updateDto: UpdatePhotographerProfileDto,
+  ) {
+    const userId = req.user.userId;
+    const role = req.user.role;
+
+    if (role !== UserRole.PHOTOGRAPHER) {
+      throw new ForbiddenException('Solo los fotógrafos pueden actualizar su perfil.');
+    }
+
+    await this.usersService.updatePhotographerProfile(userId, updateDto);
+    return { message: 'Perfil actualizado correctamente' };
+  }
 
 
 }

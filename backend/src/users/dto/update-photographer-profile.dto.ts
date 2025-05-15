@@ -1,4 +1,12 @@
-import { IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+  IsLatitude,
+  IsLongitude,
+} from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdatePhotographerProfileDto {
@@ -26,4 +34,14 @@ export class UpdatePhotographerProfileDto {
   @IsString()
   @MaxLength(255)
   description?: string;
+
+  @ApiPropertyOptional({ description: 'Latitud de la nueva ubicación del fotógrafo', example: 40.4168 })
+  @IsOptional()
+  @IsLatitude()
+  latitude?: number;
+
+  @ApiPropertyOptional({ description: 'Longitud de la nueva ubicación del fotógrafo', example: -3.7038 })
+  @IsOptional()
+  @IsLongitude()
+  longitude?: number;
 }

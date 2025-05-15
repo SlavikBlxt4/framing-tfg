@@ -225,22 +225,6 @@ export class UsersService {
   }
 
 
-  async updatePhotographerProfile(
-    userId: number,
-    dto: UpdatePhotographerProfileDto,
-  ): Promise<void> {
-    const user = await this.userRepo.findOneBy({ id: userId });
-    if (!user) throw new Error('Usuario no encontrado');
-
-    if (dto.name) user.name = dto.name;
-    if (dto.password) user.password_hash = await bcrypt.hash(dto.password, 10);
-    if (dto.phone_number) user.phone_number = dto.phone_number;
-    if (dto.description) user.description = dto.description;
-
-    await this.userRepo.save(user);
-  }
-
-
   async getPhotographerProfileById(userId: number): Promise<PhotographerPublicDto> {
     const user = await this.userRepo.findOne({
       where: {
@@ -299,4 +283,47 @@ export class UsersService {
   }
 
 
+  async updatePhotographerProfile(
+    userId: number,
+    dto: UpdatePhotographerProfileDto,
+  ): Promise<void> {
+    const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+
+    if (dto.name) user.name = dto.name;
+    if (dto.password) {
+      user.password_hash = await bcrypt.hash(dto.password, 10);
+    }
+    if (dto.phone_number) user.phone_number = dto.phone_number;
+    if (dto.description) user.description = dto.description;
+
+    // Guardar datos básicos
+    await this.userRepo.save(user);
+
+    // Coordenadas de localización
+    if (dto.latitude && dto.longitude) {
+      const point = `SRID=4326;POINT(${dto.longitude} ${dto.latitude})`;
+
+      // Buscar si ya tiene una ubicación registrada
+      const [existingLocation] = await this.userRepo.manager.query(
+        `SELECT id FROM locations WHERE photographer_id = $1 LIMIT 1`,
+        [userId],
+      );
+
+      if (existingLocation) {
+        await this.userRepo.manager.query(
+          `UPDATE locations SET coordinates = $1 WHERE id = $2`,
+          [point, existingLocation.id],
+        );
+      } else {
+        await this.userRepo.manager.query(
+          `INSERT INTO locations (photographer_id, coordinates) VALUES ($1, $2)`,
+          [userId, point],
+        );
+      }
+    }
+  }
+
+
+  
 }
