@@ -51,11 +51,9 @@ export class ServicesService {
       name: dto.name,
       description: dto.description,
       price: dto.price,
-      imageUrl: dto.imageUrl,
       photographer,
       category,
       minimum_minutes: dto.minimum_minutes,
-      discount: dto.discount,
     });
 
     return this.serviceRepo.save(service);

@@ -24,11 +24,6 @@ export class CreateServiceDto {
   @IsPositive()
   price: number;
 
-  @ApiPropertyOptional({ example: 'https://example.com/foto.jpg' })
-  @IsString()
-  @IsOptional()
-  imageUrl?: string;
-
   @ApiProperty({ example: 2 })
   @IsInt()
   categoryId: number;
@@ -43,9 +38,4 @@ export class CreateServiceDto {
   @Min(1)
   minimum_minutes: number;
 
-  @ApiPropertyOptional({ example: 10.0 })
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  discount?: number;
 }
