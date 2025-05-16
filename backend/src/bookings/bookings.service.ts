@@ -362,4 +362,26 @@ export class BookingsService {
       [photographerId, now.toISOString(), fiveDaysLater.toISOString()],
     );
   }
+
+
+  async getCompletedBookingsWithoutImages(photographerId: number) {
+    return this.bookingRepo.query(
+      `
+      SELECT 
+        b.id AS "bookingId",
+        b.date AS "sessionDate",
+        u.name AS "clientName",
+        s.name AS "serviceName"
+      FROM booking b
+      JOIN service s ON b.service_id = s.id
+      JOIN users u ON b.client_id = u.id
+      WHERE s.photographer_id = $1
+        AND b.state = 'done'
+        AND b.url_images IS NULL
+      ORDER BY b.date DESC
+      `,
+      [photographerId],
+    );
+  }
+
 }

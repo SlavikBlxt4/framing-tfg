@@ -341,4 +341,36 @@ export class BookingsController {
       user['userId'],
     );
   }
+
+
+  @Get('completed-without-images')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Ver reservas completadas sin imágenes (para fotógrafos autenticados)',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Lista de reservas en estado done que no tienen URL de imágenes',
+    schema: {
+      example: [
+        {
+          bookingId: 42,
+          sessionDate: '2025-05-01T10:00:00.000Z',
+          clientName: 'Laura Martínez',
+          serviceName: 'Sesión de retrato',
+        },
+      ],
+    },
+  })
+  async getCompletedWithoutImages(@Req() req: Request) {
+    const user = req.user;
+    if (user['role'] !== 'PHOTOGRAPHER') {
+      throw new ForbiddenException('Solo los fotógrafos pueden acceder');
+    }
+
+    return this.bookingService.getCompletedBookingsWithoutImages(user['userId']);
+  }
+
 }
