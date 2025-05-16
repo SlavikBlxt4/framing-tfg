@@ -322,14 +322,37 @@ export class BookingsController {
     return res.status(HttpStatus.OK).json(response);
   }
 
-  @Get('pending-bookings-photographer/next-5-days')
+  @Get('active-bookings-photographer/next-5-days')
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'Ver reservas pendientes del fotógrafo en los próximos 5 días',
+    summary: 'Ver agenda del fotógrafo para los próximos 5 días',
   })
-  @ApiResponse({ status: 200, type: [BookingInfoDto] })
-  @ApiResponse({ status: 403, description: 'Solo fotógrafos pueden acceder' })
-  async getPendingNext5Days(@Req() req: Request): Promise<BookingInfoDto[]> {
+  @ApiResponse({
+    status: 200,
+    description: 'Agenda organizada por día',
+    schema: {
+      example: [
+        {
+          date: '2025-05-09T00:00:00.000Z',
+          label: 'Vie, 9 May',
+          sessions: [
+            {
+              bookingId: 53,
+              clientName: 'Laura',
+              serviceName: 'Sesión retrato',
+              date: '2025-05-09T16:00:00.000Z',
+            },
+          ],
+        },
+        {
+          date: '2025-05-10T00:00:00.000Z',
+          label: 'Sáb, 10 May',
+          sessions: [],
+        },
+      ],
+    },
+  })
+  async getAgendaNext5Days(@Req() req: Request) {
     const user = req.user;
     if (user['role'] !== 'PHOTOGRAPHER') {
       throw new ForbiddenException(
@@ -337,10 +360,11 @@ export class BookingsController {
       );
     }
 
-    return this.bookingService.findPendingNext5DaysByPhotographer(
+    return this.bookingService.findAgendaNext5DaysByPhotographer(
       user['userId'],
     );
   }
+
 
 
   @Get('completed-without-images')

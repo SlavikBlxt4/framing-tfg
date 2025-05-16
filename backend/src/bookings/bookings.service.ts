@@ -332,13 +332,11 @@ export class BookingsService {
     return this.bookingRepo.save(booking);
   }
 
-  async findPendingNext5DaysByPhotographer(
-    photographerId: number,
-  ): Promise<BookingInfoDto[]> {
+  async findAgendaNext5DaysByPhotographer(photographerId: number) {
     const now = dayjs().startOf('day');
     const fiveDaysLater = now.add(5, 'day').endOf('day');
 
-    return this.bookingRepo.query(
+    const results = await this.bookingRepo.query(
       `
         SELECT b.id as "bookingId",
               b.client_id as "clientId",
@@ -355,13 +353,33 @@ export class BookingsService {
         JOIN service s ON b.service_id = s.id
         JOIN users u ON b.client_id = u.id
         WHERE s.photographer_id = $1
-          AND b.state = 'pending'
+          AND b.state = 'active'
           AND b.date BETWEEN $2 AND $3
         ORDER BY b.date ASC
       `,
       [photographerId, now.toISOString(), fiveDaysLater.toISOString()],
     );
+
+    const agenda = [];
+
+    for (let i = 0; i <= 5; i++) {
+      const currentDate = now.add(i, 'day');
+      const label = currentDate.format('ddd, D MMM'); // ej: "Mié, 15 May"
+
+      const daySessions = results.filter((r) =>
+        dayjs(r.date).isSame(currentDate, 'day'),
+      );
+
+      agenda.push({
+        date: currentDate.toISOString(),
+        label, // lo puedes usar como encabezado
+        sessions: daySessions,
+      });
+    }
+
+    return agenda;
   }
+
 
 
   async getCompletedBookingsWithoutImages(photographerId: number) {
