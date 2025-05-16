@@ -51,10 +51,8 @@ describe('ServicesService', () => {
       name: 'Sesión boda',
       description: 'Paquete para bodas',
       price: 300,
-      imageUrl: 'img.jpg',
       categoryId: 5,
       minimum_minutes: 120,
-      discount: 10,
     };
 
     it('should throw if photographer not found', async () => {
@@ -159,7 +157,6 @@ describe('ServicesService', () => {
           name: 'Producto',
           description: 'Foto de productos',
           price: 90,
-          imageUrl: 'foto.jpg',
           category: { name: 'Producto' },
         },
       ];
@@ -179,7 +176,6 @@ describe('ServicesService', () => {
         name: 'Producto',
         description: 'Foto de productos',
         price: 90,
-        imageUrl: 'foto.jpg',
         categoryName: 'Producto',
       });
     });

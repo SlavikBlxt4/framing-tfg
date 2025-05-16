@@ -17,7 +17,6 @@ describe('ServicesController', () => {
     name: 'Sesión retrato',
     description: 'Fotos retrato',
     price: 100,
-    imageUrl: 'img.jpg',
     category: { name: 'Retrato' },
   };
 
@@ -70,11 +69,9 @@ describe('ServicesController', () => {
           name: 'Boda',
           description: 'Fotos de boda',
           price: 200,
-          imageUrl: 'img.jpg',
           categoryId: null,
           categoryName: 'Boda',
           minimum_minutes: 120,
-          discount: 10,
         },
         req,
         res,
@@ -107,11 +104,9 @@ describe('ServicesController', () => {
           name: 'Boda',
           description: 'Fotos de boda',
           price: 200,
-          imageUrl: 'img.jpg',
           categoryId: null,
           categoryName: 'Inexistente',
           minimum_minutes: 120,
-          discount: 10,
         },
         req,
         res,
@@ -130,7 +125,6 @@ describe('ServicesController', () => {
         {
           serviceId: 1,
           serviceName: 'Retrato',
-          imageUrl: null,
           averageRating: 4.5,
         },
       ];
@@ -187,10 +181,8 @@ describe('ServicesController', () => {
           name: 'Producto',
           description: 'Fotos de producto',
           price: 90,
-          imageUrl: 'url.jpg',
           categoryName: 'Producto',
           minimum_minutes: 60,
-          discount: 0,
         },
       ];
 
