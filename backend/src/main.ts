@@ -9,9 +9,9 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      transform: true, // <- hace funcionar @Type de class-transformer
-      whitelist: true, // <- elimina campos no definidos en los DTO
-      forbidNonWhitelisted: true, // <- lanza error si llega un campo no permitido
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
     }),
   );
 

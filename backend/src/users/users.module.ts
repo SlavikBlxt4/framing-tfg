@@ -10,6 +10,7 @@ import { S3Module } from 'src/s3/s3.module';
 import { BookingsService } from 'src/bookings/bookings.service';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { Notification } from 'src/notifications/notification.entity';
+import { NotificationsGateway } from 'src/notifications/notification.gateway';
 
 @Module({
   imports: [
@@ -17,7 +18,12 @@ import { Notification } from 'src/notifications/notification.entity';
     AuthModule,
     S3Module,
   ],
-  providers: [UsersService, BookingsService, NotificationsService],
+  providers: [
+    UsersService,
+    BookingsService,
+    NotificationsService,
+    NotificationsGateway,
+  ],
   controllers: [UsersController],
 })
 export class UsersModule {}

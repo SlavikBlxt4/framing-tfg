@@ -3,16 +3,20 @@ import { NotificationsService } from './notifications.service';
 import { Notification } from './notification.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { NotificationsGateway } from './notification.gateway';
 
 describe('NotificationsService', () => {
   let service: NotificationsService;
   let repo: jest.Mocked<Repository<Notification>>;
-
   const mockRepo = {
     create: jest.fn(),
     save: jest.fn(),
     find: jest.fn(),
     update: jest.fn(),
+  };
+
+  const mockGateway = {
+    sendNotification: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -22,6 +26,10 @@ describe('NotificationsService', () => {
         {
           provide: getRepositoryToken(Notification),
           useValue: mockRepo,
+        },
+        {
+          provide: NotificationsGateway,
+          useValue: mockGateway,
         },
       ],
     }).compile();
@@ -60,6 +68,10 @@ describe('NotificationsService', () => {
       type,
     });
     expect(repo.save).toHaveBeenCalledWith(notificationMock);
+    expect(mockGateway.sendNotification).toHaveBeenCalledWith(
+      userId,
+      notificationMock,
+    );
     expect(result).toEqual(notificationMock);
   });
 
