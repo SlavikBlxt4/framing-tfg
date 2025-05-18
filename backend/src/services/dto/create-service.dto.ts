@@ -36,5 +36,4 @@ export class CreateServiceDto {
   @IsInt()
   @Min(1)
   minimum_minutes: number;
-
 }

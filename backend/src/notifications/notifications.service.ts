@@ -22,6 +22,9 @@ export class NotificationsService {
       message,
       type,
     });
+
+    console.log('[NOTIFICATION] Creando notificación para userId:', userId);
+
     return this.notificationRepo.save(notification);
   }
 

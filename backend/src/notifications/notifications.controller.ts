@@ -25,6 +25,8 @@ export class NotificationsController {
     return this.notificationsService.getUserNotifications(userId);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Patch(':id/read')
   async markAsRead(@Param('id') id: string) {
     const notificationId = parseInt(id);

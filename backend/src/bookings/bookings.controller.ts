@@ -365,8 +365,6 @@ export class BookingsController {
     );
   }
 
-
-
   @Get('completed-without-images')
   @ApiBearerAuth()
   @ApiOperation({
@@ -394,7 +392,8 @@ export class BookingsController {
       throw new ForbiddenException('Solo los fotógrafos pueden acceder');
     }
 
-    return this.bookingService.getCompletedBookingsWithoutImages(user['userId']);
+    return this.bookingService.getCompletedBookingsWithoutImages(
+      user['userId'],
+    );
   }
-
 }

@@ -46,7 +46,12 @@ describe('NotificationsService', () => {
     repo.create.mockReturnValue(notificationMock as any);
     repo.save.mockResolvedValue(notificationMock as any);
 
-    const result = await service.create(userId.toString(), title, message, type);
+    const result = await service.create(
+      userId.toString(),
+      title,
+      message,
+      type,
+    );
 
     expect(repo.create).toHaveBeenCalledWith({
       user: { id: userId },

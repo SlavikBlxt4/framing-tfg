@@ -5,6 +5,7 @@ import { S3Service } from 'src/s3/s3.service';
 import { BookingsService } from 'src/bookings/bookings.service';
 import { ForbiddenException } from '@nestjs/common';
 import { Readable } from 'stream';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 describe('UsersController - uploadSessionImages', () => {
   let controller: UsersController;
@@ -27,12 +28,17 @@ describe('UsersController - uploadSessionImages', () => {
   };
 
   beforeEach(async () => {
+    const mockNotificationsService = {
+      create: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [
         { provide: UsersService, useValue: mockUsersService },
         { provide: S3Service, useValue: mockS3Service },
         { provide: BookingsService, useValue: mockBookingsService },
+        { provide: NotificationsService, useValue: mockNotificationsService },
       ],
     }).compile();
 
@@ -78,6 +84,10 @@ describe('UsersController - uploadSessionImages', () => {
     mockBookingsService.findById.mockResolvedValue({
       id: bookingId,
       service: { photographer: { id: userId } },
+      photographer: { id: userId },
+      client: { id: 1 }, // Add any other nested properties your controller expects here
+      session: {},
+      images: [],
     });
 
     // Simula subida
@@ -109,6 +119,7 @@ describe('UsersController - uploadSessionImages', () => {
     mockBookingsService.findById.mockResolvedValue({
       id: bookingId,
       service: { photographer: { id: 999 } }, // fotógrafo diferente
+      client: { id: 1 }, // Add client property to avoid TypeError
     });
 
     await expect(

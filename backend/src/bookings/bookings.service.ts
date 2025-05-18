@@ -296,7 +296,7 @@ export class BookingsService {
   async findById(id: number): Promise<Booking | null> {
     return this.bookingRepo.findOne({
       where: { id },
-      relations: ['service', 'service.photographer'],
+      relations: ['service', 'service.photographer', 'client'],
     });
   }
 
@@ -380,8 +380,6 @@ export class BookingsService {
     return agenda;
   }
 
-
-
   async getCompletedBookingsWithoutImages(photographerId: number) {
     return this.bookingRepo.query(
       `
@@ -401,5 +399,4 @@ export class BookingsService {
       [photographerId],
     );
   }
-
 }

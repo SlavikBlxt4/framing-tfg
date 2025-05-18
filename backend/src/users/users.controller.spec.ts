@@ -5,6 +5,8 @@ import { UserRole } from './user.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { S3Service } from 'src/s3/s3.service';
 import { BookingsService } from '../bookings/bookings.service';
+// Import NotificationsService for correct injection token
+import { NotificationsService } from '../notifications/notifications.service';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -30,13 +32,19 @@ describe('UsersController', () => {
     findById: jest.fn(),
   };
 
+  // Mock NotificationsService
+  const mockNotificationsService = {
+    // add mock methods if needed
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [
         { provide: UsersService, useValue: mockUsersService },
-        { provide: S3Service, useValue: mockS3Service },
+        { provide: NotificationsService, useValue: mockNotificationsService },
         { provide: BookingsService, useValue: mockBookingsService },
+        { provide: S3Service, useValue: mockS3Service },
       ],
     }).compile();
 

@@ -38,6 +38,7 @@ import { BookingsService } from 'src/bookings/bookings.service';
 import { Patch } from '@nestjs/common';
 import { UpdateClientProfileDto } from './dto/update-client-profile.dto';
 import { UpdatePhotographerProfileDto } from './dto/update-photographer-profile.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @ApiTags('users')
 @Controller('users')
@@ -46,6 +47,7 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly s3Service: S3Service,
     private readonly bookingService: BookingsService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -231,7 +233,16 @@ export class UsersController {
     }
 
     // Verifica que el booking le pertenezca
+
     const booking = await this.bookingService.findById(Number(bookingId));
+    console.log(
+      'Notificando a cliente',
+      booking.client?.id,
+      'por parte de',
+      booking.service.photographer?.name,
+    );
+
+    console.log('clientId', booking.client.id.toString());
     if (!booking || booking.service.photographer.id !== userId) {
       throw new ForbiddenException(
         'No tienes permiso para subir imágenes a esta sesión.',
@@ -253,6 +264,13 @@ export class UsersController {
     await this.bookingService.setUrlImagesIfMissing(
       Number(bookingId),
       sessionPath,
+    );
+
+    await this.notificationsService.create(
+      booking.client?.id?.toString(),
+      booking.service.photographer?.name,
+      'ha subido las fotos de la sesión',
+      'SESSION_UPDATED',
     );
 
     return { uploaded };

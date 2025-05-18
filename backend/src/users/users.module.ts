@@ -8,14 +8,16 @@ import { Service } from 'src/services/service.entity';
 import { Booking } from 'src/bookings/booking.entity';
 import { S3Module } from 'src/s3/s3.module';
 import { BookingsService } from 'src/bookings/bookings.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { Notification } from 'src/notifications/notification.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Service, Booking]), // Asegúrate de importar la entidad Service si la necesitas
+    TypeOrmModule.forFeature([User, Service, Booking, Notification]), // Asegúrate de importar la entidad Service si la necesitas
     AuthModule,
     S3Module,
   ],
-  providers: [UsersService, BookingsService],
+  providers: [UsersService, BookingsService, NotificationsService],
   controllers: [UsersController],
 })
 export class UsersModule {}
