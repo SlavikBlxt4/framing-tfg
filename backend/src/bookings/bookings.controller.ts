@@ -31,6 +31,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { S3Service } from 'src/s3/s3.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @ApiTags('bookings')
 @ApiBearerAuth()
@@ -41,6 +42,7 @@ export class BookingsController {
     private readonly bookingService: BookingsService,
     private readonly servicesService: ServicesService,
     private readonly s3Service: S3Service,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   @Post('create')
@@ -114,6 +116,13 @@ export class BookingsController {
       bookedMinutes: booking.bookedMinutes,
     };
 
+    await this.notificationsService.create(
+      booking.client?.id?.toString(),
+      booking.service.photographer?.name,
+      'ha confirmado tu reserva',
+      'SESSION_CONFIRMED',
+    );
+
     return res.status(HttpStatus.OK).json(response);
   }
 
@@ -148,6 +157,13 @@ export class BookingsController {
       status: booking.state,
       bookedMinutes: booking.bookedMinutes,
     };
+
+    await this.notificationsService.create(
+      booking.client?.id?.toString(),
+      booking.service.photographer?.name,
+      'ha cancelado tu reserva',
+      'SESSION_CANCELLED',
+    );
 
     return res.status(HttpStatus.OK).json(response);
   }

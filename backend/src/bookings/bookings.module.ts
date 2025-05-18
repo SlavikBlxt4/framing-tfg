@@ -10,13 +10,29 @@ import { CategoriesService } from 'src/categories/categories.service';
 import { Category } from 'src/categories/category.entity';
 import { WeekDay } from 'src/week-day/entities/week-day.entity';
 import { S3Module } from 'src/s3/s3.module';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { NotificationsGateway } from 'src/notifications/notification.gateway';
+import { Notification } from 'src/notifications/notification.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Booking, User, Service, Category, WeekDay]),
+    TypeOrmModule.forFeature([
+      Booking,
+      User,
+      Service,
+      Category,
+      WeekDay,
+      Notification,
+    ]),
     S3Module,
   ],
   controllers: [BookingsController],
-  providers: [BookingsService, ServicesService, CategoriesService],
+  providers: [
+    BookingsService,
+    ServicesService,
+    CategoriesService,
+    NotificationsService,
+    NotificationsGateway,
+  ],
 })
 export class BookingsModule {}

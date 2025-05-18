@@ -4,6 +4,7 @@ import { BookingsService } from './bookings.service';
 import { ServicesService } from '../services/services.service';
 import { BookingState } from './enums/booking-state.enum';
 import { S3Service } from 'src/s3/s3.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 describe('BookingsController', () => {
   let controller: BookingsController;
@@ -41,6 +42,10 @@ describe('BookingsController', () => {
         { provide: BookingsService, useValue: mockBookingService },
         { provide: ServicesService, useValue: {} },
         { provide: S3Service, useValue: {} },
+        {
+          provide: NotificationsService,
+          useValue: { create: jest.fn() },
+        },
       ],
     }).compile();
 
