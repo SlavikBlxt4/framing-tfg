@@ -5,6 +5,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Req,
   UploadedFile,
@@ -20,6 +21,7 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -75,6 +77,20 @@ export class UsersController {
     const imageUrl = await this.s3Service.uploadUserProfileImage(userId, file);
     await this.usersService.updateProfileImage(userId, imageUrl);
     return { imageUrl };
+  }
+
+  @Get('by-category/:categoryId')
+  @ApiOperation({ summary: 'Obtener fotógrafos por categoría' })
+  @ApiParam({ name: 'categoryId', type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de fotógrafos',
+    type: [PhotographerPublicDto],
+  })
+  async getPhotographersByCategory(
+    @Param('categoryId', ParseIntPipe) categoryId: number,
+  ): Promise<PhotographerPublicDto[]> {
+    return this.usersService.findByCategory(categoryId);
   }
 
   @UseGuards(JwtAuthGuard)

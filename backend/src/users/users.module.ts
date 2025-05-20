@@ -11,10 +11,11 @@ import { BookingsService } from 'src/bookings/bookings.service';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { Notification } from 'src/notifications/notification.entity';
 import { NotificationsGateway } from 'src/notifications/notification.gateway';
+import { Category } from 'src/categories/category.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Service, Booking, Notification]), // Asegúrate de importar la entidad Service si la necesitas
+    TypeOrmModule.forFeature([User, Service, Booking, Notification, Category]), // Asegúrate de importar la entidad Service si la necesitas
     AuthModule,
     S3Module,
   ],

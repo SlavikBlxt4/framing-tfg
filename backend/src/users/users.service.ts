@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User, UserRole } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -13,6 +13,7 @@ import { Service } from '../services/service.entity'; // entidad de servicios
 import { PhotographerPublicDto } from './dto/photographer-public.dto';
 import { UpdateClientProfileDto } from './dto/update-client-profile.dto';
 import { UpdatePhotographerProfileDto } from './dto/update-photographer-profile.dto';
+import { Category } from 'src/categories/category.entity';
 
 @Injectable()
 export class UsersService {
@@ -24,6 +25,8 @@ export class UsersService {
     private serviceRepo: Repository<Service>,
 
     private jwtService: JwtService,
+    @InjectRepository(Category)
+    private readonly categoryRepo: Repository<Category>,
   ) {}
 
   async getServicesByPhotographerId(
@@ -35,6 +38,82 @@ export class UsersService {
       .leftJoinAndSelect('service.category', 'category') // si usas category
       .where('photographer.id = :photographerId', { photographerId })
       .getMany();
+  }
+
+  async findByCategory(categoryId: number): Promise<PhotographerPublicDto[]> {
+    const category = await this.categoryRepo.findOne({
+      where: { id: categoryId },
+    });
+    if (!category) {
+      throw new NotFoundException(
+        `Categoría con ID ${categoryId} no encontrada`,
+      );
+    }
+
+    const services = await this.serviceRepo.find({
+      where: { category: { id: categoryId } },
+      relations: ['photographer', 'ratings'],
+    });
+
+    const photographerIds = Array.from(
+      new Set(services.map((s) => s.photographer.id)),
+    );
+
+    if (!photographerIds.length) return [];
+
+    const photographers = await this.userRepo.find({
+      where: {
+        id: In(photographerIds),
+        role: UserRole.PHOTOGRAPHER,
+        active: true,
+      },
+      relations: {
+        services: {
+          ratings: true,
+        },
+        locations: true,
+        availability: {
+          day: true,
+          schedule: true,
+        },
+      },
+    });
+
+    return photographers.map((user) => {
+      const allRatings = user.services.flatMap((s) => s.ratings ?? []);
+      const sum = allRatings.reduce((acc, r) => acc + (r.rating || 0), 0);
+      const average = allRatings.length > 0 ? sum / allRatings.length : 0;
+
+      const week = Array.from({ length: 7 }, (_, i) => ({
+        day: i + 1,
+        slots: [],
+      }));
+
+      user.availability?.forEach((slot) => {
+        const dayIndex = slot.day.id - 1;
+        week[dayIndex].slots.push({
+          start: slot.schedule.starting_hour,
+          end: slot.schedule.ending_hour,
+        });
+      });
+
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone_number: user.phone_number,
+        registry_date: user.registry_date,
+        active: user.active,
+        role: user.role,
+        description: user.description,
+        url_portfolio: user.url_portfolio,
+        url_profile_image: user.url_profile_image,
+        services: user.services,
+        locations: user.locations,
+        averageRating: parseFloat(average.toFixed(2)),
+        availability: week,
+      };
+    });
   }
 
   async signup(
@@ -123,40 +202,6 @@ export class UsersService {
         LIMIT 10;
       `);
   }
-
-  // async getPhotographersByCategory(categoryId: number): Promise<PhotographerCardResponseDto[]> {
-  //   const photographers = await this.userRepo.find({
-  //     where: {
-  //       role: UserRole.PHOTOGRAPHER,
-  //       services: {
-  //         category: { id: categoryId },
-  //       },
-  //     },
-  //     relations: ['services', 'services.category', 'services.ratings'],
-  //   });
-
-  //   return photographers.map((user) => {
-  //     const service = user.services[0]; // Usamos el primero como "principal"
-
-  //     const ratings = service?.ratings ?? [];
-  //     const avg =
-  //       ratings.length > 0
-  //         ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
-  //         : 0;
-
-  //     return {
-  //       id: String(user.id),
-  //       nombreEstudio: service?.name ?? user.name,
-  //       fotografiaUrl: user.url_profile_image ?? '',
-  //       // fotoPortada: service?.coverPhotoUrl ?? '', //implementaremos portada mas adelante
-  //       puntuacion: parseFloat(avg.toFixed(1)),
-  //       categoriaId: service?.category?.id ?? null,
-  //       direccion: user?.location ?? '',
-  //       seguidores: user.followersCount ?? 0,
-  //       verificado: user.isVerified ?? false,
-  //     };
-  //   });
-  // }
 
   async getAllPhotographers(): Promise<PhotographerPublicDto[]> {
     const photographers = await this.userRepo.find({

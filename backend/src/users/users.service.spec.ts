@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Category } from 'src/categories/category.entity';
 
 describe('UsersService', () => {
   let usersService: UsersService;
@@ -35,6 +36,15 @@ describe('UsersService', () => {
               where: jest.fn().mockReturnThis(),
               getMany: jest.fn().mockResolvedValue([]),
             }),
+          },
+        },
+        {
+          provide: getRepositoryToken(Category),
+          useValue: {
+            findOne: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+            query: jest.fn(),
           },
         },
         {
