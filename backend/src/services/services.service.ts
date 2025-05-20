@@ -125,4 +125,40 @@ export class ServicesService {
       discount: service.discount,
     };
   }
+
+  async editService(
+    serviceId: number,
+    photographerId: number,
+    dto: Partial<CreateServiceDto>,
+  ): Promise<Service> {
+    const service = await this.serviceRepo.findOne({
+      where: { id: serviceId },
+      relations: ['photographer', 'category'],
+    });
+
+    if (!service) {
+      throw new NotFoundException('Service not found');
+    }
+
+    if (service.photographer.id !== photographerId) {
+      throw new ForbiddenException('You are not allowed to edit this service');
+    }
+
+    if (dto.categoryId) {
+      const category = await this.categoryRepo.findOne({
+        where: { id: dto.categoryId },
+      });
+      if (!category) {
+        throw new NotFoundException('Category not found');
+      }
+      service.category = category;
+    }
+
+    if (dto.name !== undefined) service.name = dto.name;
+    if (dto.description !== undefined) service.description = dto.description;
+    if (dto.price !== undefined) service.price = dto.price;
+    if (dto.minimum_minutes !== undefined) service.minimum_minutes = dto.minimum_minutes;
+
+    return this.serviceRepo.save(service);
+  }
 }

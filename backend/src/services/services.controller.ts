@@ -145,4 +145,72 @@ export class ServicesController {
   ): Promise<ServiceResponseDto[]> {
     return this.servicesService.getServicesByCategoryName(categoryName);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('edit/:serviceId')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Editar un servicio existente del fotógrafo autenticado' })
+  @ApiParam({ name: 'serviceId', type: Number })
+  @ApiBody({ type: CreateServiceDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Servicio editado con éxito',
+    type: ServiceResponseDto,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'No autorizado para editar este servicio',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Servicio no encontrado',
+  })
+  async editService(
+    @Param('serviceId') serviceId: number,
+    @Body() dto: CreateServiceDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const photographerId = req.user['userId'];
+
+    if (!dto.categoryId && dto.categoryName) {
+      const category = await this.categoryRepo.findOne({
+        where: { name: dto.categoryName },
+      });
+
+      if (!category) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Estilo no encontrado',
+        });
+      }
+
+      dto.categoryId = category.id;
+    }
+
+    const updatedService = await this.servicesService.editService(
+      serviceId,
+      photographerId,
+      dto,
+    );
+
+    if (!updatedService) {
+      return res
+        .status(HttpStatus.FORBIDDEN)
+        .json({ message: 'Unauthorized to edit this service or service not found' });
+    }
+
+    const responseDto: ServiceResponseDto = {
+      id: updatedService.id,
+      name: updatedService.name,
+      description: updatedService.description,
+      price: updatedService.price,
+      imageUrl: updatedService.imageUrl,
+      categoryName: updatedService.category.name,
+      minimum_minutes: updatedService.minimum_minutes,
+      discount: updatedService.discount,
+    };
+
+    return res.status(HttpStatus.OK).json(responseDto);
+  }
+
 }
