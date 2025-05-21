@@ -33,21 +33,24 @@ export class BookingsService {
     private readonly serviceRepo: Repository<Service>,
   ) {}
 
-  async createBooking(
+async createBooking(
     clientId: number,
     serviceId: number,
     date: Date,
     bookedMinutes: number,
   ): Promise<Booking> {
+    // 1) Validar cliente
     const client = await this.userRepo.findOne({ where: { id: clientId } });
     if (!client) throw new NotFoundException('Cliente no encontrado');
 
+    // 2) Validar servicio
     const service = await this.serviceRepo.findOne({
       where: { id: serviceId },
       relations: ['photographer'],
     });
     if (!service) throw new NotFoundException('Servicio no encontrado');
 
+    // 3) Fecha futura
     const now = new Date();
     if (date <= now) {
       throw new ConflictException(
@@ -55,11 +58,10 @@ export class BookingsService {
       );
     }
 
-    // Verificar disponibilidad (no permitir doble reserva en misma fecha)
+    // 4) Disponibilidad
     const existing = await this.bookingRepo.find({
       where: { service: { id: serviceId } },
     });
-
     for (const b of existing) {
       if (b.date.getTime() === date.getTime()) {
         throw new ConflictException(
@@ -68,17 +70,26 @@ export class BookingsService {
       }
     }
 
+    // 5) Crear y guardar (aquí el trigger pondrá NEW.price)
     const booking = this.bookingRepo.create({
-      client,
-      service,
-      date,
-      bookingDate: now,
-      bookedMinutes,
-      state: BookingState.PENDING,
-    });
+        client,
+        service,
+        date,
+        bookingDate: now,
+        bookedMinutes,
+        state: BookingState.PENDING,
+      });
+      const saved = await this.bookingRepo.save(booking);
 
-    return this.bookingRepo.save(booking);
-  }
+      // 6) Intentar recargar con price + relaciones
+      const fullBooking = await this.bookingRepo.findOne({
+        where: { id: saved.id },
+        relations: ['service', 'client'],
+      });
+
+      // Si el mock de findOne devuelve undefined, devolvemos saved
+      return fullBooking ?? saved;
+    }
 
   async updateBookingStatus(
     bookingId: number,

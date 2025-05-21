@@ -73,7 +73,7 @@ export class BookingsController {
     const response: BookingResponseDto = {
       bookingId: booking.id,
       serviceName: booking.service.name,
-      price: booking.service.price,
+      price: booking.price,
       date: booking.date.toISOString(),
       clientName: booking.client.name,
       clientEmail: booking.client.email,
