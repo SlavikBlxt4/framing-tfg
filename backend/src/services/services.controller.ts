@@ -149,7 +149,9 @@ export class ServicesController {
   @UseGuards(JwtAuthGuard)
   @Post('edit/:serviceId')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Editar un servicio existente del fotógrafo autenticado' })
+  @ApiOperation({
+    summary: 'Editar un servicio existente del fotógrafo autenticado',
+  })
   @ApiParam({ name: 'serviceId', type: Number })
   @ApiBody({ type: CreateServiceDto })
   @ApiResponse({
@@ -194,9 +196,9 @@ export class ServicesController {
     );
 
     if (!updatedService) {
-      return res
-        .status(HttpStatus.FORBIDDEN)
-        .json({ message: 'Unauthorized to edit this service or service not found' });
+      return res.status(HttpStatus.FORBIDDEN).json({
+        message: 'Unauthorized to edit this service or service not found',
+      });
     }
 
     const responseDto: ServiceResponseDto = {
@@ -212,5 +214,4 @@ export class ServicesController {
 
     return res.status(HttpStatus.OK).json(responseDto);
   }
-
 }

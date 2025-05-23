@@ -157,7 +157,8 @@ export class ServicesService {
     if (dto.name !== undefined) service.name = dto.name;
     if (dto.description !== undefined) service.description = dto.description;
     if (dto.price !== undefined) service.price = dto.price;
-    if (dto.minimum_minutes !== undefined) service.minimum_minutes = dto.minimum_minutes;
+    if (dto.minimum_minutes !== undefined)
+      service.minimum_minutes = dto.minimum_minutes;
 
     return this.serviceRepo.save(service);
   }

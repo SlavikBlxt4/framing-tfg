@@ -35,6 +35,29 @@ export class NotificationsService {
     return saved;
   }
 
+  async createNotificationPhotographer(
+    userId: string,
+    title: string,
+    message: string,
+    type: string = 'SESSION_REQUESTED',
+  ) {
+    const notification = this.notificationRepo.create({
+      user: { id: Number(userId) },
+      title,
+      message,
+      type,
+    });
+
+    console.log('[NOTIFICATION] Creando notificación para userId:', userId);
+
+    const saved = await this.notificationRepo.save(notification);
+
+    // ✅ Emitir notificación en tiempo real
+    this.notificationsGateway.sendNotification(Number(userId), saved);
+
+    return saved;
+  }
+
   async getUserNotifications(userId: string): Promise<Notification[]> {
     return this.notificationRepo.find({
       where: { user: { id: Number(userId) } },

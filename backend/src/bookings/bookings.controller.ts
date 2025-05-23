@@ -81,6 +81,19 @@ export class BookingsController {
       bookedMinutes: booking.bookedMinutes,
     };
 
+    console.log('log:', booking.client?.name);
+
+    const photographerId = booking.service?.photographer?.id;
+    console.log('log:', photographerId);
+    if (photographerId) {
+      await this.notificationsService.createNotificationPhotographer(
+        photographerId.toString(),
+        booking.client?.name,
+        'ha solicitado una reserva',
+        'SESSION_REQUESTED',
+      );
+    }
+
     return res.status(HttpStatus.OK).json(response);
   }
 

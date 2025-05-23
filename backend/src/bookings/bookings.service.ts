@@ -33,7 +33,7 @@ export class BookingsService {
     private readonly serviceRepo: Repository<Service>,
   ) {}
 
-async createBooking(
+  async createBooking(
     clientId: number,
     serviceId: number,
     date: Date,
@@ -72,24 +72,24 @@ async createBooking(
 
     // 5) Crear y guardar (aquí el trigger pondrá NEW.price)
     const booking = this.bookingRepo.create({
-        client,
-        service,
-        date,
-        bookingDate: now,
-        bookedMinutes,
-        state: BookingState.PENDING,
-      });
-      const saved = await this.bookingRepo.save(booking);
+      client,
+      service,
+      date,
+      bookingDate: now,
+      bookedMinutes,
+      state: BookingState.PENDING,
+    });
+    const saved = await this.bookingRepo.save(booking);
 
-      // 6) Intentar recargar con price + relaciones
-      const fullBooking = await this.bookingRepo.findOne({
-        where: { id: saved.id },
-        relations: ['service', 'client'],
-      });
+    // 6) Intentar recargar con price + relaciones
+    const fullBooking = await this.bookingRepo.findOne({
+      where: { id: saved.id },
+      relations: ['service', 'service.photographer', 'client'],
+    });
 
-      // Si el mock de findOne devuelve undefined, devolvemos saved
-      return fullBooking ?? saved;
-    }
+    // Si el mock de findOne devuelve undefined, devolvemos saved
+    return fullBooking ?? saved;
+  }
 
   async updateBookingStatus(
     bookingId: number,
