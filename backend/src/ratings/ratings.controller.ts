@@ -33,46 +33,6 @@ import { RatingHistoryResponseDto } from './dto/rating-history-response.dto';
 export class RatingsController {
   constructor(private readonly ratingsService: RatingsService) {}
 
-  @Post('rate')
-  @ApiOperation({ summary: 'Calificar un servicio como cliente autenticado' })
-  @ApiBody({ type: CreateRatingDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Calificación registrada con éxito',
-    type: RatingResponseDto,
-  })
-  @ApiResponse({
-    status: 400,
-    description:
-      'Datos inválidos o intento de calificar un servicio no contratado',
-  })
-  async rateService(
-    @Body() dto: CreateRatingDto,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    const clientId = req.user['userId'];
-
-    const result: RatingResponseDto = await this.ratingsService.createRating(
-      dto,
-      clientId,
-    );
-
-    return res.status(HttpStatus.OK).json(result);
-  }
-
-  @Get(':serviceId')
-  @ApiOperation({ summary: 'Obtener calificaciones de un servicio' })
-  @ApiParam({ name: 'serviceId', type: Number, example: 5 })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de calificaciones del servicio',
-    type: [RatingUserResponseDto],
-  })
-  async getRatings(@Param('serviceId', ParseIntPipe) serviceId: number) {
-    return this.ratingsService.getFormattedRatings(serviceId);
-  }
-
   @Get('history')
   @ApiOperation({
     summary: 'Obtener histórico de reseñas del usuario autenticado',
@@ -87,4 +47,22 @@ export class RatingsController {
     const history = await this.ratingsService.getUserRatings(clientId);
     return res.status(HttpStatus.OK).json(history);
   }
+
+  @Get('photographer/:id')
+  @ApiOperation({
+    summary: 'Obtener todas las calificaciones de un fotógrafo por ID',
+  })
+  @ApiParam({ name: 'id', type: Number })
+  @ApiResponse({
+    status: 200,
+    type: [RatingUserResponseDto],
+  })
+  async getRatingsByPhotographer(
+    @Param('id', ParseIntPipe) photographerId: number,
+    @Res() res: Response,
+  ) {
+    const result = await this.ratingsService.getRatingsByPhotographer(photographerId);
+    return res.status(HttpStatus.OK).json(result);
+  }
+
 }

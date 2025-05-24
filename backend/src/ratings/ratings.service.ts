@@ -27,67 +27,6 @@ export class RatingsService {
     private readonly serviceRepo: Repository<Service>,
   ) {}
 
-  async createRating(
-    dto: CreateRatingDto,
-    clientId: number,
-  ): Promise<RatingResponseDto> {
-    const client = await this.userRepo.findOne({ where: { id: clientId } });
-    if (!client) throw new NotFoundException('Cliente no encontrado');
-
-    const service = await this.serviceRepo.findOne({
-      where: { id: dto.serviceId },
-    });
-    if (!service) throw new NotFoundException('Servicio no encontrado');
-
-    const existing = await this.ratingRepo.findOne({
-      where: {
-        service: { id: dto.serviceId },
-        client: { id: clientId },
-      },
-    });
-
-    if (existing) {
-      throw new ConflictException('Ya has calificado este servicio');
-    }
-
-    const rating = this.ratingRepo.create({
-      service,
-      client,
-      rating: dto.ratingValue,
-      comment: dto.comment,
-    });
-
-    const saved = await this.ratingRepo.save(rating);
-
-    return {
-      id: saved.id,
-      serviceId: saved.service.id,
-      clientId: saved.client.id,
-      rating: saved.rating,
-      comment: saved.comment,
-    };
-  }
-
-  async getFormattedRatings(
-    serviceId: number,
-  ): Promise<RatingUserResponseDto[]> {
-    const ratings = await this.ratingRepo.find({
-      where: { service: { id: serviceId } },
-      relations: ['client'],
-      order: { createdAt: 'DESC' },
-    });
-
-    return ratings.map((r) => ({
-      nombre: r.client.name || 'Usuario',
-      fecha: r.createdAt.toLocaleDateString('es-ES'),
-      puntuacion: r.rating,
-      comentario: r.comment ?? '',
-      avatarUrl:
-        r.client.url_profile_image ??
-        'https://cdn.cosmos.so/default-avatar.jpg',
-    }));
-  }
-
   async getUserRatings(clientId: number): Promise<RatingHistoryResponseDto[]> {
     const ratings = await this.ratingRepo.find({
       where: { client: { id: clientId } },
@@ -108,4 +47,27 @@ export class RatingsService {
         'https://cdn.cosmos.so/default-avatar.jpg',
     }));
   }
+
+  async getRatingsByPhotographer(
+    photographerId: number,
+  ): Promise<RatingUserResponseDto[]> {
+    const ratings = await this.ratingRepo
+      .createQueryBuilder('r')
+      .leftJoinAndSelect('r.client', 'c')
+      .leftJoinAndSelect('r.service', 's')
+      .where('s.photographer_id = :photographerId', { photographerId })
+      .orderBy('r.created_at', 'DESC')
+      .getMany();
+
+    return ratings.map((r) => ({
+      nombre: r.client?.name || 'Usuario',
+      fecha: r.createdAt.toLocaleDateString('es-ES'),
+      puntuacion: r.rating,
+      comentario: r.comment ?? '',
+      avatarUrl:
+        r.client?.url_profile_image ??
+        'https://cdn.cosmos.so/default-avatar.jpg',
+    }));
+  }
+
 }
