@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Location } from './location.entity';
 import { Repository } from 'typeorm';
 import { LocationResponseDto } from './dto/location-response.dto';
+import { CoordinateDto } from './dto/create-locations.dto';
 
 @Injectable()
 export class LocationsService {
@@ -22,4 +23,14 @@ export class LocationsService {
       coordinates: loc.coordinates,
     }));
   }
+
+  async addLocations(userId: number, locations: CoordinateDto[]): Promise<void> {
+    for (const loc of locations) {
+      await this.locationRepo.insert({
+        photographer: { id: userId },
+        coordinates: () => `ST_SetSRID(ST_MakePoint(${loc.lon}, ${loc.lat}), 4326)`,
+      });
+    }
+  }
+
 }
