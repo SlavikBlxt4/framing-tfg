@@ -24,13 +24,16 @@ export class LocationsService {
     }));
   }
 
-  async addLocations(userId: number, locations: CoordinateDto[]): Promise<void> {
+  async addLocations(
+    userId: number,
+    locations: CoordinateDto[],
+  ): Promise<void> {
     for (const loc of locations) {
       await this.locationRepo.insert({
         photographer: { id: userId },
-        coordinates: () => `ST_SetSRID(ST_MakePoint(${loc.lon}, ${loc.lat}), 4326)`,
+        coordinates: () =>
+          `ST_SetSRID(ST_MakePoint(${loc.lon}, ${loc.lat}), 4326)`,
       });
     }
   }
-
 }
