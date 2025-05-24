@@ -425,4 +425,41 @@ export class BookingsController {
       user['userId'],
     );
   }
+
+
+  @Get('next-active')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Obtener la próxima sesión activa del cliente',
+  })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: {
+        photographerName: 'Juan Fotógrafo',
+        date: '2025-06-01T15:00:00.000Z',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Sin sesiones activas',
+    schema: {
+      example: { message: 'Todavía no tienes una sesión contratada' },
+    },
+  })
+  async getNextActiveBooking(@Req() req: Request, @Res() res: Response) {
+    const clientId = req.user['userId'];
+
+    const nextBooking = await this.bookingService.findNextActiveBooking(clientId);
+
+    if (!nextBooking) {
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: 'Todavía no tienes una sesión contratada' });
+    }
+
+    return res.status(HttpStatus.OK).json(nextBooking);
+  }
+
 }

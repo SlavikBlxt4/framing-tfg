@@ -410,4 +410,24 @@ export class BookingsService {
       [photographerId],
     );
   }
+
+  async findNextActiveBooking(clientId: number): Promise<{ photographerName: string; date: Date } | null> {
+    const result = await this.bookingRepo.query(
+      `
+      SELECT u.name AS "photographerName", b.date
+      FROM booking b
+      JOIN service s ON b.service_id = s.id
+      JOIN users u ON s.photographer_id = u.id
+      WHERE b.client_id = $1
+        AND b.state = 'active'
+        AND b.date > NOW()
+      ORDER BY b.date ASC
+      LIMIT 1
+      `,
+      [clientId],
+    );
+
+    return result.length > 0 ? result[0] : null;
+  }
+
 }
