@@ -12,6 +12,7 @@ export class PhotographerPublicDto {
   description?: string;
   url_portfolio?: string;
   url_profile_image?: string;
+  url_cover_image?: string;
   services: Service[];
   locations: Location[];
   averageRating: number;

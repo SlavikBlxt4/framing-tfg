@@ -247,6 +247,7 @@ export class UsersService {
         description: user.description,
         url_portfolio: user.url_portfolio,
         url_profile_image: user.url_profile_image,
+        url_cover_image: user.url_cover_image, 
         services: user.services,
         locations: user.locations,
         averageRating: parseFloat(average.toFixed(2)),
