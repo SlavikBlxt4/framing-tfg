@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RatingsController } from './ratings.controller';
 import { RatingsService } from './ratings.service';
+import { CreateRatingDto } from './dto/create-rating.dto';
+import { RatingResponseDto } from './dto/rating-response.dto';
 import { RatingUserResponseDto } from './dto/rating-user-response.dto';
 import { RatingHistoryResponseDto } from './dto/rating-history-response.dto';
 
@@ -9,6 +11,7 @@ describe('RatingsController', () => {
   let ratingsService: jest.Mocked<RatingsService>;
 
   const mockRatingsService: Partial<jest.Mocked<RatingsService>> = {
+    createRating: jest.fn(),
     getUserRatings: jest.fn(),
     getRatingsByPhotographer: jest.fn(),
   };
@@ -32,22 +35,51 @@ describe('RatingsController', () => {
     expect(controller).toBeDefined();
   });
 
+  describe('rateService', () => {
+    it('should return created rating', async () => {
+      const dto: CreateRatingDto = {
+        serviceId: 10,
+        ratingValue: 4,
+        comment: 'Muy bueno',
+      };
+
+      const expected: RatingResponseDto = {
+        id: 123,
+        serviceId: 10,
+        clientId: 1,
+        rating: 4,
+        comment: 'Muy bueno',
+      };
+
+      ratingsService.createRating.mockResolvedValue(expected);
+
+      const req = { user: { userId: 1 } } as any;
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+
+      await controller.rateService(dto, req, res);
+
+      expect(ratingsService.createRating).toHaveBeenCalledWith(dto, 1);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(expected);
+    });
+  });
+
   describe('getUserRatings', () => {
     it('should return user rating history', async () => {
-      const mockHistory: RatingHistoryResponseDto[] = [
+      const history: RatingHistoryResponseDto[] = [
         {
           id: 1,
           rating: 5,
-          comment: 'Muy bueno',
+          comment: 'Excelente',
           fecha: '24/05/2025',
-          serviceName: 'Retrato',
-          photographerName: 'Juan',
+          serviceName: 'Sesión Retrato',
+          photographerName: 'Juan Pérez',
           photographerId: 22,
           photographerAvatar: 'https://cdn.cosmos.so/default-avatar.jpg',
         },
       ];
 
-      ratingsService.getUserRatings.mockResolvedValue(mockHistory);
+      ratingsService.getUserRatings.mockResolvedValue(history);
 
       const req = { user: { userId: 1 } } as any;
       const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
@@ -56,23 +88,23 @@ describe('RatingsController', () => {
 
       expect(ratingsService.getUserRatings).toHaveBeenCalledWith(1);
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(mockHistory);
+      expect(res.json).toHaveBeenCalledWith(history);
     });
   });
 
   describe('getRatingsByPhotographer', () => {
-    it('should return ratings for photographer by ID', async () => {
-      const mockRatings: RatingUserResponseDto[] = [
+    it('should return ratings for a given photographer', async () => {
+      const result: RatingUserResponseDto[] = [
         {
-          nombre: 'Cliente',
+          nombre: 'Cliente 1',
           fecha: '24/05/2025',
           puntuacion: 5,
-          comentario: 'Excelente',
+          comentario: 'Muy recomendable',
           avatarUrl: 'https://cdn.cosmos.so/default-avatar.jpg',
         },
       ];
 
-      ratingsService.getRatingsByPhotographer.mockResolvedValue(mockRatings);
+      ratingsService.getRatingsByPhotographer.mockResolvedValue(result);
 
       const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
 
@@ -80,7 +112,7 @@ describe('RatingsController', () => {
 
       expect(ratingsService.getRatingsByPhotographer).toHaveBeenCalledWith(22);
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(mockRatings);
+      expect(res.json).toHaveBeenCalledWith(result);
     });
   });
 });
