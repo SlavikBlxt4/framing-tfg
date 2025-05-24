@@ -1,15 +1,9 @@
 import {
   Injectable,
-  NotFoundException,
-  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Rating } from './rating.entity';
 import { Repository } from 'typeorm';
-import { CreateRatingDto } from './dto/create-rating.dto';
-import { RatingResponseDto } from './dto/rating-response.dto';
-import { User } from '../users/user.entity';
-import { Service } from '../services/service.entity';
 
 import { RatingUserResponseDto } from './dto/rating-user-response.dto';
 import { RatingHistoryResponseDto } from './dto/rating-history-response.dto';
@@ -19,12 +13,6 @@ export class RatingsService {
   constructor(
     @InjectRepository(Rating)
     private readonly ratingRepo: Repository<Rating>,
-
-    @InjectRepository(User)
-    private readonly userRepo: Repository<User>,
-
-    @InjectRepository(Service)
-    private readonly serviceRepo: Repository<Service>,
   ) {}
 
   async getUserRatings(clientId: number): Promise<RatingHistoryResponseDto[]> {

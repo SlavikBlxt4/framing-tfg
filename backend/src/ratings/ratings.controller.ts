@@ -1,7 +1,5 @@
 import {
-  Body,
   Controller,
-  Post,
   Req,
   UseGuards,
   Res,
@@ -11,8 +9,6 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { RatingsService } from './ratings.service';
-import { CreateRatingDto } from './dto/create-rating.dto';
-import { RatingResponseDto } from './dto/rating-response.dto';
 import { RatingUserResponseDto } from './dto/rating-user-response.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { Request, Response } from 'express';
@@ -20,7 +16,6 @@ import {
   ApiTags,
   ApiBearerAuth,
   ApiOperation,
-  ApiBody,
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
