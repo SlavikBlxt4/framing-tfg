@@ -153,7 +153,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Post('photographers/upload-portfolio-images')
-  @UseInterceptors(FilesInterceptor('files', 10))
+  @UseInterceptors(FilesInterceptor('files', 20))
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({

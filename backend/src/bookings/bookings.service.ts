@@ -411,7 +411,9 @@ export class BookingsService {
     );
   }
 
-  async findNextActiveBooking(clientId: number): Promise<{ photographerName: string; date: Date } | null> {
+  async findNextActiveBooking(
+    clientId: number,
+  ): Promise<{ photographerName: string; date: Date } | null> {
     const result = await this.bookingRepo.query(
       `
       SELECT u.name AS "photographerName", b.date
@@ -429,5 +431,4 @@ export class BookingsService {
 
     return result.length > 0 ? result[0] : null;
   }
-
 }

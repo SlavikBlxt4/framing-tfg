@@ -426,7 +426,6 @@ export class BookingsController {
     );
   }
 
-
   @Get('next-active')
   @ApiBearerAuth()
   @ApiOperation({
@@ -451,7 +450,8 @@ export class BookingsController {
   async getNextActiveBooking(@Req() req: Request, @Res() res: Response) {
     const clientId = req.user['userId'];
 
-    const nextBooking = await this.bookingService.findNextActiveBooking(clientId);
+    const nextBooking =
+      await this.bookingService.findNextActiveBooking(clientId);
 
     if (!nextBooking) {
       return res
@@ -461,5 +461,4 @@ export class BookingsController {
 
     return res.status(HttpStatus.OK).json(nextBooking);
   }
-
 }
