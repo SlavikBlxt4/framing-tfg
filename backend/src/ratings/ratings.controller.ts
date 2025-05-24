@@ -7,9 +7,12 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Body,
+  Post,
 } from '@nestjs/common';
 import { RatingsService } from './ratings.service';
 import { RatingUserResponseDto } from './dto/rating-user-response.dto';
+import { RatingHistoryResponseDto } from './dto/rating-history-response.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { Request, Response } from 'express';
 import {
@@ -18,8 +21,10 @@ import {
   ApiOperation,
   ApiResponse,
   ApiParam,
+  ApiBody,
 } from '@nestjs/swagger';
-import { RatingHistoryResponseDto } from './dto/rating-history-response.dto';
+import { CreateRatingDto } from './dto/create-rating.dto';
+import { RatingResponseDto } from './dto/rating-response.dto';
 
 @ApiTags('ratings')
 @ApiBearerAuth()
@@ -27,6 +32,24 @@ import { RatingHistoryResponseDto } from './dto/rating-history-response.dto';
 @Controller('ratings')
 export class RatingsController {
   constructor(private readonly ratingsService: RatingsService) {}
+
+  @Post('rate')
+  @ApiOperation({ summary: 'Calificar un servicio como cliente autenticado' })
+  @ApiBody({ type: CreateRatingDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Calificación registrada con éxito',
+    type: RatingResponseDto,
+  })
+  async rateService(
+    @Body() dto: CreateRatingDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const clientId = req.user['userId'];
+    const result = await this.ratingsService.createRating(dto, clientId);
+    return res.status(HttpStatus.OK).json(result);
+  }
 
   @Get('history')
   @ApiOperation({
