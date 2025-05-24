@@ -124,6 +124,7 @@ export class BookingsService {
 
     return bookings.map((b) => ({
       bookingId: b.id,
+      serviceId: b.service.id,
       serviceName: b.service.name,
       bookingDate: b.bookingDate,
       date: b.date,

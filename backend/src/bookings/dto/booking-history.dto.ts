@@ -4,6 +4,9 @@ export class BookingHistoryDto {
   @ApiProperty({ example: 1 })
   bookingId: number;
 
+  @ApiProperty({ example: 67 })
+  serviceId: number;
+
   @ApiProperty({ example: '2024-11-01T10:00:00.000Z' })
   bookingDate: Date;
 
