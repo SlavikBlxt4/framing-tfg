@@ -33,7 +33,9 @@ export class RatingsService {
     const client = await this.userRepo.findOne({ where: { id: clientId } });
     if (!client) throw new NotFoundException('Cliente no encontrado');
 
-    const service = await this.serviceRepo.findOne({ where: { id: dto.serviceId } });
+    const service = await this.serviceRepo.findOne({
+      where: { id: dto.serviceId },
+    });
     if (!service) throw new NotFoundException('Servicio no encontrado');
 
     const existing = await this.ratingRepo.findOne({
@@ -107,5 +109,4 @@ export class RatingsService {
         'https://cdn.cosmos.so/default-avatar.jpg',
     }));
   }
-
 }

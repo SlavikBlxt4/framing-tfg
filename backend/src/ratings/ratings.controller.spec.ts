@@ -54,7 +54,10 @@ describe('RatingsController', () => {
       ratingsService.createRating.mockResolvedValue(expected);
 
       const req = { user: { userId: 1 } } as any;
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as any;
 
       await controller.rateService(dto, req, res);
 
@@ -82,7 +85,10 @@ describe('RatingsController', () => {
       ratingsService.getUserRatings.mockResolvedValue(history);
 
       const req = { user: { userId: 1 } } as any;
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as any;
 
       await controller.getUserRatings(req, res);
 
@@ -106,7 +112,10 @@ describe('RatingsController', () => {
 
       ratingsService.getRatingsByPhotographer.mockResolvedValue(result);
 
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as any;
 
       await controller.getRatingsByPhotographer(22, res);
 

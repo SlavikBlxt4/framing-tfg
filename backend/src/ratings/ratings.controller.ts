@@ -79,8 +79,8 @@ export class RatingsController {
     @Param('id', ParseIntPipe) photographerId: number,
     @Res() res: Response,
   ) {
-    const result = await this.ratingsService.getRatingsByPhotographer(photographerId);
+    const result =
+      await this.ratingsService.getRatingsByPhotographer(photographerId);
     return res.status(HttpStatus.OK).json(result);
   }
-
 }

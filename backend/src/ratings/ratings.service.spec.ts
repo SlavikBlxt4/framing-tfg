@@ -62,13 +62,17 @@ describe('RatingsService', () => {
 
     it('should throw if client not found', async () => {
       userRepo.findOne.mockResolvedValue(null);
-      await expect(service.createRating(dto, 1)).rejects.toThrow(NotFoundException);
+      await expect(service.createRating(dto, 1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw if service not found', async () => {
       userRepo.findOne.mockResolvedValue({ id: 1 } as User);
       serviceRepo.findOne.mockResolvedValue(null);
-      await expect(service.createRating(dto, 1)).rejects.toThrow(NotFoundException);
+      await expect(service.createRating(dto, 1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw if rating already exists', async () => {
@@ -76,7 +80,9 @@ describe('RatingsService', () => {
       serviceRepo.findOne.mockResolvedValue({ id: 10 } as Service);
       ratingRepo.findOne.mockResolvedValue({ id: 99 } as Rating);
 
-      await expect(service.createRating(dto, 1)).rejects.toThrow(ConflictException);
+      await expect(service.createRating(dto, 1)).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('should create and return a new rating', async () => {
@@ -176,7 +182,9 @@ describe('RatingsService', () => {
         getMany: jest.fn().mockResolvedValue(mockRatings),
       };
 
-      jest.spyOn(ratingRepo, 'createQueryBuilder').mockReturnValue(mockQueryBuilder);
+      jest
+        .spyOn(ratingRepo, 'createQueryBuilder')
+        .mockReturnValue(mockQueryBuilder);
 
       const result = await service.getRatingsByPhotographer(22);
 

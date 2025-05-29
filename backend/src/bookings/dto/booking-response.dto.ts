@@ -29,4 +29,10 @@ export class BookingResponseDto {
   })
   @IsInt()
   bookedMinutes: number;
+
+  @ApiProperty({
+    example: 'https://s3.amazonaws.com/bucket/booking/123/images/',
+    required: false,
+  })
+  urlImages?: string;
 }

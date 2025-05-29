@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Booking } from './booking.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { BookingState } from './enums/booking-state.enum';
 import { User } from '../users/user.entity';
 import { Service } from '../services/service.entity';
@@ -431,5 +431,16 @@ export class BookingsService {
     );
 
     return result.length > 0 ? result[0] : null;
+  }
+
+  async getClientBookingsWithImages(clientId: number) {
+    return this.bookingRepo.find({
+      where: {
+        client: { id: clientId },
+        urlImages: Not(IsNull()),
+      },
+      relations: ['service', 'client'], // <-- Add 'client' here
+      order: { date: 'DESC' },
+    });
   }
 }
