@@ -457,6 +457,7 @@ export class BookingsService {
 
       const keys = await s3Service.listRawKeysInPrefix(prefix);
       resultados.push({
+        bookingId: booking.id,
         photographerName: booking.service.photographer.name,
         date: booking.date.toISOString(),
         imageCount: keys.length,

@@ -2,6 +2,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class BookingResumenDto {
+  @ApiProperty({ example: 1 })
+  bookingId: number;
+
   @ApiProperty({ example: 'Luz y Rostros' })
   photographerName: string;
 
