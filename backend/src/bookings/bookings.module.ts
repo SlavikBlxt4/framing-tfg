@@ -13,6 +13,7 @@ import { S3Module } from 'src/s3/s3.module';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { NotificationsGateway } from 'src/notifications/notification.gateway';
 import { Notification } from 'src/notifications/notification.entity';
+import { S3Service } from 'src/s3/s3.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { Notification } from 'src/notifications/notification.entity';
     CategoriesService,
     NotificationsService,
     NotificationsGateway,
+    S3Service,
   ],
 })
 export class BookingsModule {}

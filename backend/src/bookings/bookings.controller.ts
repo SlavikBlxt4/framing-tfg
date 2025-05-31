@@ -32,6 +32,7 @@ import {
 } from '@nestjs/swagger';
 import { S3Service } from 'src/s3/s3.service';
 import { NotificationsService } from 'src/notifications/notifications.service';
+import { BookingResumenDto } from './dto/booking-resumen.dto';
 
 @ApiTags('bookings')
 @ApiBearerAuth()
@@ -467,23 +468,10 @@ export class BookingsController {
   @ApiResponse({
     status: 200,
     description: 'Lista de reservas con imágenes',
-    type: [BookingResponseDto],
+    type: [BookingResumenDto],
   })
   async getClientBookingsWithImages(@Req() req: Request) {
     const clientId = req.user['userId'];
-    const bookings =
-      await this.bookingService.getClientBookingsWithImages(clientId);
-    // Optionally, map to BookingResponseDto if needed
-    return bookings.map((b) => ({
-      bookingId: b.id,
-      serviceName: b.service.name,
-      price: b.price,
-      date: b.date.toISOString(),
-      clientName: b.client.name,
-      clientEmail: b.client.email,
-      status: b.state,
-      bookedMinutes: b.bookedMinutes,
-      urlImages: b.urlImages,
-    }));
+    return this.bookingService.getClientBookingsResumen(clientId);
   }
 }

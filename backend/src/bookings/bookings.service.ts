@@ -17,6 +17,8 @@ import { CheckAvailabilityDto } from './dto/check-availability.dto';
 import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { BookingResumenDto } from './dto/booking-resumen.dto';
+import { S3Service } from '../s3/s3.service'; // ya lo tienes en tu módulo
 dayjs.extend(utc);
 dayjs.extend(isSameOrBefore);
 
@@ -433,14 +435,41 @@ export class BookingsService {
     return result.length > 0 ? result[0] : null;
   }
 
-  async getClientBookingsWithImages(clientId: number) {
-    return this.bookingRepo.find({
+  async getClientBookingsResumen(
+    clientId: number,
+  ): Promise<BookingResumenDto[]> {
+    const bookings = await this.bookingRepo.find({
       where: {
         client: { id: clientId },
         urlImages: Not(IsNull()),
       },
-      relations: ['service', 'client'], // <-- Add 'client' here
+      relations: ['service', 'service.photographer'],
       order: { date: 'DESC' },
     });
+
+    const resultados: BookingResumenDto[] = [];
+
+    for (const booking of bookings) {
+      const url = booking.urlImages;
+      const prefix = this.extractPrefixFromUrl(url);
+
+      const s3Service = new S3Service(); // Asegúrate de que S3Service esté correctamente inyectado o instanciado
+
+      const keys = await s3Service.listRawKeysInPrefix(prefix);
+      resultados.push({
+        photographerName: booking.service.photographer.name,
+        date: booking.date.toISOString(),
+        imageCount: keys.length,
+      });
+    }
+
+    return resultados;
+  }
+
+  // método auxiliar privado (añádelo en BookingsService)
+  private extractPrefixFromUrl(url: string): string {
+    // Ej: https://<bucket>.s3.<region>.amazonaws.com/booking/123/
+    const urlObj = new URL(url);
+    return urlObj.pathname.slice(1); // elimina el '/' inicial
   }
 }
