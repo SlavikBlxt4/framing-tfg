@@ -6,6 +6,8 @@ import {
   IsOptional,
   Matches,
   IsEnum,
+  IsNotEmpty,
+  MinLength,
 } from 'class-validator';
 
 export class SignupDto {
@@ -17,8 +19,9 @@ export class SignupDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ example: '12345678' })
+  @IsNotEmpty() 
   @IsString()
+  @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres.' })
   password: string;
 
   @ApiProperty({ example: '+34666555444', required: false })

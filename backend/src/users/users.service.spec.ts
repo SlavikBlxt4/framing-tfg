@@ -89,7 +89,7 @@ describe('UsersService', () => {
       const result = await usersService.signup(
         'Laura',
         'laura@example.com',
-        'pass123',
+        'pass12345',
         '600123456',
         UserRole.CLIENT,
       );
