@@ -92,6 +92,7 @@ export class BookingsController {
         booking.client?.name,
         'ha solicitado una reserva',
         'SESSION_REQUESTED',
+        booking.id,
       );
     }
 

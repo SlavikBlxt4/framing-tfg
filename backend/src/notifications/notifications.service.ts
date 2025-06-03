@@ -43,12 +43,14 @@ export class NotificationsService {
     title: string,
     message: string,
     type: string = 'SESSION_REQUESTED',
+    bookingId?: number,
   ) {
     const notification = this.notificationRepo.create({
       user: { id: Number(userId) },
       title,
       message,
       type,
+      booking: bookingId ? { id: bookingId } : undefined,
     });
 
     console.log('[NOTIFICATION] Creando notificación para userId:', userId);
@@ -70,6 +72,15 @@ export class NotificationsService {
       relations: ['booking'],
       order: { createdAt: 'DESC' },
     });
+    console.log(
+      '[NOTIFICATION] Obteniendo notificaciones para userId:',
+      userId,
+    );
+    console.log('[NOTIFICATION] Notificaciones obtenidas:', notifications);
+    console.log(
+      'bookingId: ',
+      notifications.map((n) => n.booking?.id),
+    );
 
     return notifications.map((n) => ({
       id: n.id,
