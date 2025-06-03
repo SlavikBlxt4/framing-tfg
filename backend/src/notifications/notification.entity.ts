@@ -1,3 +1,4 @@
+import { Booking } from 'src/bookings/booking.entity';
 import { User } from 'src/users/user.entity';
 import {
   Column,
@@ -15,6 +16,10 @@ export class Notification {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @ManyToOne(() => Booking, { nullable: true })
+  @JoinColumn({ name: 'booking_id' })
+  booking?: Booking;
 
   @Column()
   title: string;

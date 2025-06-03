@@ -124,7 +124,9 @@ export class UsersService {
     role: UserRole,
   ): Promise<User> {
     if (!password || password.length < 8) {
-      throw new BadRequestException('La contraseña debe tener al menos 8 caracteres.');
+      throw new BadRequestException(
+        'La contraseña debe tener al menos 8 caracteres.',
+      );
     }
     const existing = await this.userRepo.findOne({ where: { email } });
     if (existing) {

@@ -86,6 +86,7 @@ describe('NotificationsService', () => {
     expect(repo.find).toHaveBeenCalledWith({
       where: { user: { id: Number(userId) } },
       order: { createdAt: 'DESC' },
+      relations: ['booking'],
     });
     expect(result).toEqual(notifications);
   });
