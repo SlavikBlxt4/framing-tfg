@@ -65,34 +65,28 @@ export class NotificationsService {
 
   // notifications.service.ts
   async getUserNotifications(
-    userId: string,
-  ): Promise<NotificationResponseDto[]> {
-    const notifications = await this.notificationRepo.find({
-      where: { user: { id: Number(userId) } },
-      relations: ['booking'],
-      order: { createdAt: 'DESC' },
-    });
-    console.log(
-      '[NOTIFICATION] Obteniendo notificaciones para userId:',
-      userId,
-    );
-    console.log('[NOTIFICATION] Notificaciones obtenidas:', notifications);
-    console.log(
-      'bookingId: ',
-      notifications.map((n) => n.booking?.id),
-    );
+  userId: string,
+): Promise<NotificationResponseDto[]> {
+  const notifications = await this.notificationRepo.find({
+    where: { user: { id: Number(userId) } },
+    relations: ['booking', 'booking.service'],
+    order: { createdAt: 'DESC' },
+  });
 
-    return notifications.map((n) => ({
-      id: n.id,
-      title: n.title,
-      message: n.message,
-      type: n.type,
-      read: n.read,
-      createdAt: n.createdAt,
-      bookingId: n.booking?.id,
-      bookingDate: n.booking?.date,
-    }));
-  }
+  return notifications.map((n) => ({
+    id: n.id,
+    title: n.title,
+    message: n.message,
+    type: n.type,
+    read: n.read,
+    createdAt: n.createdAt,
+    bookingId: n.booking?.id,
+    bookingDate: n.booking?.date,
+    serviceName: n.booking?.service?.name,
+    bookingDuration: n.booking?.bookedMinutes,
+    bookingPrice: n.booking?.price,
+  }));
+}
 
   async markAsRead(notificationId: number): Promise<void> {
     await this.notificationRepo.update(notificationId, { read: true });

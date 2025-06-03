@@ -24,4 +24,13 @@ export class NotificationResponseDto {
 
   @ApiProperty({ required: false })
   bookingDate?: Date;
+
+  @ApiProperty({ required: false })
+  serviceName?: string;
+
+  @ApiProperty({ required: false })
+  bookingDuration?: number;
+
+  @ApiProperty({ required: false })
+  bookingPrice?: number;
 }
